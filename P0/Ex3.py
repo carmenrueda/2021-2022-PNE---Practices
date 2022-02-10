@@ -7,8 +7,8 @@ for l in list_genes:
     length = (len(Seq0.seq_read_fasta(FOLDER + l + ".txt")))
     list_length.append(length)
 
-zipped= list(zip(list_genes, list_length))
+zipped = list(zip(list_genes, list_length))
 for l in zipped:
-    print(l[0], l[1])
+    print("Gene", l[0], "---> Length:", l[1])
 
 
