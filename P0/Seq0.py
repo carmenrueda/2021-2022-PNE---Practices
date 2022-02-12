@@ -1,7 +1,7 @@
-def seq_ping():
+def seq_ping(): #1
     print("Ok")
 
-def valid_filename():
+def valid_filename(): #2
     exit = False
     while not exit:
         filename = input("What file do you want to open? ")
@@ -12,7 +12,7 @@ def valid_filename():
         except FileNotFoundError:
             print("File does not exist. Provide another file.")
 
-def seq_read_fasta(filename):
+def seq_read_fasta(filename): #2
     seq = open(filename, "r").read()
     seq = seq[seq.find("\n"):].replace("\n", "")
     return seq
