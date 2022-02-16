@@ -17,13 +17,13 @@ def seq_read_fasta(filename): #2
     seq = seq[seq.find("\n"):].replace("\n", "")
     return seq
 
-def seq_count_base(seq): #4
+def seq_count_base(seq, base): #4
     seq = seq[seq.find("\n"):].replace("\n", "")
-    nucleotides = 0
+    seq_count = 0
     for n in seq:
-        if n is ("A" or "C" or "G" or "T"):
-            nucleotides += 1
-    return nucleotides
+        if n == base:
+            seq_count += 1
+    return seq_count
 
 def seq_count(seq): #5
     seq = seq[seq.find("\n"):].replace("\n", "")
@@ -33,8 +33,7 @@ def seq_count(seq): #5
     return d
 
 def seq_reverse(seq): #6
-    seq = seq[seq.find("\n"):].replace("\n", "")
-    seq = seq[:20]
+    seq = seq[seq.find("\n"):].replace("\n", "")[:20]
     reverse_seq = seq[len(seq)::-1]
     return reverse_seq
 
