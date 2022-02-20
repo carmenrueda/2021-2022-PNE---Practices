@@ -1,4 +1,4 @@
 import Seq0
-
-seq = input("Introduce the sequence: ")
-print(Seq0.seq_count(seq))
+filename = Seq0.valid_filename()
+sequence = Seq0.seq_read_fasta(filename)
+print(Seq0.seq_count(sequence))

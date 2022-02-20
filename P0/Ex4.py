@@ -1,4 +1,5 @@
 import Seq0
-seq = input("Enter a seq: ")
+filename = Seq0.valid_filename()
+sequence = Seq0.seq_read_fasta(filename)
 base = input("Enter a base: ")
-print(Seq0.seq_count_base(seq, base))
+print(Seq0.seq_count_base(sequence, base))

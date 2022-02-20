@@ -1,3 +1,6 @@
+from typing import List
+
+
 def seq_ping(): #1
     print("Ok")
 
@@ -18,24 +21,25 @@ def seq_read_fasta(filename): #2
     return seq
 
 def seq_count_base(seq, base): #4
-    seq = seq[seq.find("\n"):].replace("\n", "")
-    seq_count = 0
-    for n in seq:
-        if n == base:
-            seq_count += 1
+    list_bases = ["A", "C", "G", "T"]
+    for n in list_bases:
+        seq_count = n.count(seq)
     return seq_count
 
+
 def seq_count(seq): #5
-    seq = seq[seq.find("\n"):].replace("\n", "")
     d = {"A": 0, "C": 0, "G": 0, "T": 0}
     for n in seq:
         d[n] += 1
     return d
 
+
 def seq_reverse(seq): #6
-    seq = seq[seq.find("\n"):].replace("\n", "")[:20]
-    reverse_seq = seq[len(seq)::-1]
-    return reverse_seq
+    seq = seq[:20]
+    rev = ""
+    for i in reversed(seq):
+        rev += i
+    return rev
 
 def seq_complement(seq): #7
     base_complement = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A'}
