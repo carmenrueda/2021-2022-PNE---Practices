@@ -1,44 +1,69 @@
 class Seq:
-    """A class for representing sequences"""
+    BASES_ALLOWED = ["A", "C", "G", "T"]
+    COMPLEMENT_BASES = {"A": "T", "C": "G", "T": "A", "G":"C"}
 
-    def __init__(self, strbases): #dont return anything in the init function
+    @staticmethod
+    def valid_sequence(sequence):
+        valid = len(sequence) != 0
+        i = 0
+        while valid and i < len(sequence):
+            if sequence[i] not in Seq.BASES_ALLOWED:
+                valid = False
+            i += 1
+        return valid
 
-        # Initialize the sequence with the value
-        # passed as argument when creating the object
-        self.strbases = strbases
-        if not self.valid_sequence():
-            self.strbases = "ERROR"
-            print("ERROR!!")
-        else:
+    def __init__(self, sequence="NULL"):
+        if sequence == "NULL":
+            self.sequence = sequence
+            print("NULL sequence created!")
+        elif Seq.valid_sequence(sequence):
+            self.sequence = sequence
             print("New sequence created!")
-
-    @staticmethod #so that it doesnt expect the class but a normal argument
-    def valid_sequence2(sequence): #to check if correct before instantiating the class
-        valid = True
-        i = 0
-        while i < len(sequence):
-            c = sequence[i]
-            if c != "A" and c != "C" and c != "G" and c != "T":
-                valid = False
-            i += 1
-        return valid
-
-    def valid_sequence(self): #as long as the method is inside the the class, it doesn't matter its location bc everything compiles at once #to check if correct after instantiating the class
-        valid = True
-        i = 0
-        while i < len(self.strbases):
-            c = self.strbases[i]
-            if c != "A" and c != "C" and c != "G" and c != "T":
-                valid = False
-            i += 1
-        return valid
+        else:
+            self.bases = "ERROR"
+            print("Invalid sequence detected!")
 
     def __str__(self):
-        """Method called when the object is being printed"""
-
-        # -- We just return the string with the sequence
-        return self.strbases
+        return self.sequence
 
     def len(self):
-        """Calculate the length of the sequence"""
-        return len(self.strbases)
+        if self.sequence =="NULL" or self.sequence == "ERROR":
+            return 0
+        return len(self.sequence)
+
+    def count_bases(self):
+        if self.sequence == "NULL" or self.sequence == "ERROR":
+            return 0
+        return self.bases.count(sequence)
+
+    def count(self):
+        result = {}
+        if self.sequence == "NULL" or self.sequence == "ERROR":
+            for base in Seq.BASES_ALLOWED:
+                result[base] = 0
+        else:
+            for base in Seq.BASES_ALLOWED:
+                result[base] = self.sequence.count(base)
+        return result
+
+    def reverse(self):
+        if self.sequence == "NULL" or self.sequence == "ERROR":
+            return self.sequence
+        return self.sequence[::-1]
+
+    def complement(self):
+        if self.sequence == "NULL" or self.sequence == "ERROR":
+            return self.sequence
+        result = ""
+        for base in self.sequence:
+            result += Seq.COMPLEMENT_BASES[base]
+        return result
+
+    def read_fasta(self, filename):
+        from pathlib import Path
+        file_contents = Path(filename). read_text()
+        lines = file_contents.splitlines()
+        body = lines [1:]
+        self.bases = ""
+        for line in body:
+            self.bases += line

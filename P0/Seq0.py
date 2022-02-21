@@ -1,6 +1,4 @@
 from typing import List
-
-
 def seq_ping(): #1
     print("Ok")
 
@@ -16,9 +14,14 @@ def valid_filename(): #2
             print("File does not exist. Provide another file.")
 
 def seq_read_fasta(filename): #2
-    seq = open(filename, "r").read()
-    seq = seq[seq.find("\n"):].replace("\n", "")
-    return seq
+    from pathlib import Path
+    file_contents = Path(filename).read_text()
+    lines = file_contents.splitlines()
+    body = lines[1:]
+    sequence = ""
+    for line in body:
+        sequence += line
+    return sequence
 
 def seq_count_base(seq, base): #4
     list_bases = ["A", "C", "G", "T"]
