@@ -1,14 +1,10 @@
-import Seq0
+from Seq0 import *
 
 FOLDER = "../Session-04/"
-list_genes = ["U5", "FRAT1", "ADA", "FXN", "RNU6_269P"]
-list_length = []
-for l in list_genes:
-    length = (len(Seq0.seq_read_fasta(FOLDER + l + ".txt")))
-    list_length.append(length)
+GENES = ["ADA", "FRAT1", "FXN", "RNU6_269P", "U5"]
 
-zipped = list(zip(list_genes, list_length))
-for l in zipped:
-    print("Gene", l[0], "---> Length:", l[1])
-
+for gene in GENES:
+    filename = gene + ".txt"
+    sequence = seq_read_fasta(FOLDER + filename)
+    print(f"Gene {gene} ---> Length: {seq_len(sequence)}")
 

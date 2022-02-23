@@ -54,4 +54,3 @@ def most_freq_base(seq): #8
         max_base += base
         max_count += count
     return max_base
-
