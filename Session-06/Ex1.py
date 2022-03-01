@@ -1,5 +1,9 @@
 class Seq:
 
+    BASES_ALLOWED = ["A", "C", "G", "T"]
+
+    def valid_bases(self, bases):
+
     def __init__(self, bases):
         self.bases = bases
 
