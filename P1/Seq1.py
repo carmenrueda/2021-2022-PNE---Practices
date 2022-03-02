@@ -20,30 +20,26 @@ class Seq:
             self.sequence = sequence
             print("New sequence created!")
         else:
-            self.bases = "ERROR"
+            self.sequence = "ERROR"
             print("Invalid sequence detected!")
 
     def __str__(self):
         return self.sequence
 
     def len(self):
-        if self.sequence =="NULL" or self.sequence == "ERROR":
+        if self.sequence == "NULL" or self.sequence == "ERROR":
             return 0
         return len(self.sequence)
 
-    def count_bases(self):
+    def count_bases(self, bases):
         if self.sequence == "NULL" or self.sequence == "ERROR":
             return 0
-        return self.bases.count(sequence)
+        return self.sequence.count(bases)
 
     def count(self):
         result = {}
-        if self.sequence == "NULL" or self.sequence == "ERROR":
-            for base in Seq.BASES_ALLOWED:
-                result[base] = 0
-        else:
-            for base in Seq.BASES_ALLOWED:
-                result[base] = self.sequence.count(base)
+        for base in Seq.BASES_ALLOWED:
+            result[base] = self.count_bases(base)
         return result
 
     def reverse(self):
@@ -61,9 +57,9 @@ class Seq:
 
     def read_fasta(self, filename):
         from pathlib import Path
-        file_contents = Path(filename). read_text()
+        file_contents = Path(filename).read_text()
         lines = file_contents.splitlines()
-        body = lines [1:]
+        body = lines[1:]
         self.bases = ""
         for line in body:
             self.bases += line
