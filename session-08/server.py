@@ -2,7 +2,7 @@ import socket #new module--> first import it
 
 # Configure the Server's IP and PORT
 PORT = 8000
-IP = "localhost"
+IP = "255.255.0.0"
 MAX_OPEN_REQUESTS = 5
 
 # Counting the number of connections
