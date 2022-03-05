@@ -55,12 +55,17 @@ class Seq:
             result += Seq.COMPLEMENT_BASES[base]
         return result
 
-    def read_fasta(self, filename):
+    """def read_fasta(self, filename):
         from pathlib import Path
-
         file_contents = Path(filename).read_text()
         lines = file_contents.splitlines()
         body = lines[1:]
         self.sequence = ""
         for line in body:
-            self.sequence += line
+            self.sequence += line"""
+
+    def read_fasta(self, FOLDER, FILENAME):
+        filename = FOLDER + FILENAME + ".txt"
+        seq = open(filename, "r").read()
+        seq = seq[seq.find("\n"):].replace("\n", "")
+        self.sequence = seq
