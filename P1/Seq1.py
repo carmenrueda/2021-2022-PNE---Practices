@@ -57,9 +57,10 @@ class Seq:
 
     def read_fasta(self, filename):
         from pathlib import Path
+
         file_contents = Path(filename).read_text()
         lines = file_contents.splitlines()
         body = lines[1:]
-        self.bases = ""
+        self.sequence = ""
         for line in body:
-            self.bases += line
+            self.sequence += line
