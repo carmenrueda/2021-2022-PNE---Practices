@@ -16,9 +16,10 @@ FILENAME = ["U5", "FRAT1", "FXN", "ADA", "RNU6_269P"]
 
 for e in FILENAME:
     s = Seq()
-    s.read_fasta(FOLDER, FILENAME)
+    s.read_fasta(FOLDER, e)
     msg = str(s)
-    print("To server: Sending U5 gene to the server... ")
+    print("To server: Sending", e, "gene to the server... ")
     response = c.talk(msg)
     print(f"Response: {response}")
     print("To server:", msg)
+    print()
