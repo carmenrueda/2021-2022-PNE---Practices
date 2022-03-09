@@ -64,8 +64,12 @@ class Seq:
         for line in body:
             self.sequence += line"""
 
-    def read_fasta(self, FOLDER, FILENAME):
-        filename = FOLDER + FILENAME + ".txt"
-        seq = open(filename, "r").read()
-        seq = seq[seq.find("\n"):].replace("\n", "")
-        self.sequence = seq
+    def read_fasta(self, file_name):
+        from pathlib import Path
+
+        file_contents = Path(file_name).read_text()
+        lines = file_contents.splitlines()
+        body = lines[1:]
+        self.bases = ""
+        for line in body:
+            self.bases += line

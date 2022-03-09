@@ -10,9 +10,13 @@ BASES = 10
 print(f"-----| Practice {PRACTICE}, Exercise {EXERCISE} |------")
 
 SERVER_IP = "localhost"
-SERVER_PORT = 8081
+SERVER1_PORT = 8081
+SERVER2_PORT = (8080)
 
-c = Client(SERVER_IP, SERVER_PORT)
+c1 = Client(SERVER_IP, SERVER1_PORT)
+print(c1)
+c = Client(SERVER_IP, SERVER2_PORT)
+print(c2)
 
 s = Seq()
 s.read_fasta(f"../Genes/{GENE}.txt")
