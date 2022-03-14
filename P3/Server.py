@@ -1,46 +1,70 @@
 import socket
 import termcolor
-from Seq1 import Seq
+from seq_server import Seq
+import os #modulo para interactuar con mi sistema operativo
 
-IP = "127.0.0.1"
-PORT = 8080
-MAX_OPEN_REQUESTS = 5
+IP = "localhost"
+PORT = 8081
+GENES = ["ADA", "FRAT1", "U5", "RNU6_269P", "FXN"]
 
-n = 0
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 try:
     server_socket.bind((IP, PORT))
-    server_socket.listen(MAX_OPEN_REQUESTS)
+    server_socket.listen()
+    print("Seq Server configured!")
 
     while True:
-        print(f"Waiting for connections at ({IP}:{PORT})...")
+        print(f"Waiting for clients at ({IP}:{PORT})...")
         (client_socket, client_address) = server_socket.accept()
-        n += 1
-        print(f"Connection {n} from ({client_address})")
 
         request_bytes = client_socket.recv(2048)
-        request = request_bytes.decode("utf-8").replace("\n","").strip()
-        splitted_cmd = request.split(" ")
-        cmd = splitted_cmd[0]
-        if cmd != "PING":
-            arg = splitted_cmd[1]
-        print(cmd)
-        termcolor.cprint(f"Message from client: {request}", 'green')
-        if cmd == "PING":
-            response = "OK!!!\n"
-        elif cmd == "GET":
-            list_seq = ["ACGTGTGGGGTCAGTG", "ACCCGTGTGGCCCCA", "TGGGTTCAACGTG", "ACGTGCACCAACCCGT", "ACCCACAACACGTGT"]
-            response = list_seq[int(arg)]
-            print(response)
-        elif cmd == "INFO":
-            s = Seq(arg)
-            response = f"Total length: {str(s.len())}\n"
-            print(response)
-        else:
-            response = "Not available command is not available\n"
+        request = request_bytes.decode("utf-8")
 
+        slices = request.split(" ")
+        command = slices[0]
+        termcolor.cprint(f"{command} Command", 'green')
+
+        if command == "PING":
+            response = f"OK!\n"
+
+        elif command == "GET":
+            gene_number = int(slices[1])
+            gene = GENES[gene_number]
+            sequence = Seq()
+            filename = os.path.join("..", "Genes", f"{gene}.txt") #"../GENES/U5.txt"
+            sequence.read_fasta(filename)
+
+            response = f"{sequence}\n"
+
+        elif command == "INFO":
+            bases = slices[1]
+            sequence = Seq(bases)
+
+            response = f"{sequence.info()}"
+
+        elif command == "COMP":
+            bases = slices[1]
+            sequence = Seq(bases)
+
+            response = f"{sequence.complement()}\n"
+
+        elif command == "REV":
+            bases = slices[1]
+            sequence = Seq(bases)
+
+            response = f"{sequence.reverse()}\n"
+
+        elif command == "GENE":
+            gene = slices[1]
+            sequence = Seq()
+            filename = os.path.join("..", "Genes", f"{gene}.txt")
+            sequence.read_fasta(filename)
+
+            response = f"{sequence}\n"
+
+        print(response)
         response_bytes = str.encode(response)
         client_socket.send(response_bytes)
 
