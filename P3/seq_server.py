@@ -61,12 +61,12 @@ class Seq:
         file_contents = Path(file_name).read_text()
         lines = file_contents.splitlines()
         body = lines[1:]
-        self.bases = ""
+        self.sequence = ""
         for line in body:
-            self.bases += line
+            self.sequence += line
 
     def info(self):
-        result = f"Sequence: {self.bases}\n"
+        result = f"Sequence: {self.sequence}\n"
         result += f"Total length: {self.len()}\n"
 
         for base, count in self.count().items():
