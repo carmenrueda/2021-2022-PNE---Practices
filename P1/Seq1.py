@@ -1,6 +1,6 @@
 class Seq:
     BASES_ALLOWED = ["A", "C", "G", "T"]
-    COMPLEMENT_BASES = {"A": "T", "C": "G", "T": "A", "G":"C"}
+    COMPLEMENT_BASES = {"A": "T", "C": "G", "T": "A", "G": "C"}
 
     @staticmethod
     def valid_sequence(sequence):
