@@ -1,4 +1,4 @@
-from seq_client import Client
+from Clientclass import Client
 
 SERVER_IP = "localhost"
 SERVER_PORT = 8080
@@ -17,16 +17,13 @@ for n in range(5):
     c.debug_talk(f"GET {n}")
     print()
 
-c.debug_talk(f"INFO {BASES}")
-
+c.debug_talk(f"INFO: {BASES}")
 print()
 
-c.debug_talk(f"COMP {BASES}")
-
+c.debug_talk(f"COMP: {BASES}")
 print()
 
-c.debug_talk(f"REV {BASES}")
-
+c.debug_talk(f"REV: {BASES}")
 print()
 
 for gene in GENES:
