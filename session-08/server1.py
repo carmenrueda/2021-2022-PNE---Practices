@@ -6,6 +6,7 @@ MAX_OPEN_REQUESTS = 5 # puedo tener 5 conexiones abiertas a la vez (me comunico 
 
 n = 0 # cada vez que se conecta un nuevo cliente suma 1
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #me creo un socket, el canal de comunicacion para leer y escribir pero sin utilidad
+server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #el port esta siendo utilizado pero vuelvo a intentarlo
 
 try:
     server_socket.bind((IP, PORT)) #oye socket, vinculate a la tuple de la IP de mi maquina y el PORT q use, ahora el socket se puede usar
