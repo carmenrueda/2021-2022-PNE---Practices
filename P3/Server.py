@@ -16,6 +16,7 @@ try:
     print("Seq Server configured!")
 
     while True:
+        try:
         print(f"Waiting for clients at ({IP}:{PORT})...")
         (client_socket, client_address) = server_socket.accept()
 
@@ -64,11 +65,23 @@ try:
 
             response = f"{sequence}\n"
 
-        print(response)
-        response_bytes = str.encode(response)
-        client_socket.send(response_bytes)
+        elif command == "LEN":
+            if len(slices) == 1:
+                sequence = Seq()
+            else:
+                bases = slices[1]
+                sequence = Seq(bases)
 
-        client_socket.close()
+            response = f"{sequence.len()}\n}"
+
+    except Exception:
+        response ="ERROR\n"
+
+    print(response)
+    response_bytes = str.encode(response)
+    client_socket.send(response_bytes)
+
+    client_socket.close()
 
 
 except socket.error:

@@ -51,7 +51,8 @@ def most_freq_base(seq): #8
     max_base = None
     max_count = 0
     for base, count in seq_count(seq).items():
-        max_base += base
-        max_count += count
+        if count >= max_count:
+            max_base = base
+            max_count = count
     return max_base
 

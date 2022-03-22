@@ -1,6 +1,6 @@
 from Seq0 import *
 
-FOLDER = "../Session-04/"
+FOLDER = "../Genes/"
 filename = input("Enter a filename: ")
 print(f"DNA file: {filename}")
 sequence = seq_read_fasta(FOLDER + filename)

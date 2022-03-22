@@ -1,6 +1,6 @@
 from Seq0 import *
 
-FOLDER = "../Session-04/"
+FOLDER = "../Genes/"
 GENES = ["ADA", "FRAT1", "FXN", "RNU6_269P", "U5"]
 
 for gene in GENES:

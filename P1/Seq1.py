@@ -38,8 +38,12 @@ class Seq:
 
     def count(self):
         result = {}
-        for base in Seq.BASES_ALLOWED:
-            result[base] = self.count_bases(base)
+        if self.sequence == "NULL" or self.sequence == "ERROR":
+            for base in Seq.BASES_ALLOWED:
+                result[base] = 0
+        else:
+            for base in Seq.BASES_ALLOWED:
+                result[base] = self.count_bases(base)
         return result
 
     def reverse(self):
@@ -70,6 +74,6 @@ class Seq:
         file_contents = Path(file_name).read_text()
         lines = file_contents.splitlines()
         body = lines[1:]
-        self.bases = ""
+        self.sequence = ""
         for line in body:
-            self.bases += line
+            self.sequence += line
