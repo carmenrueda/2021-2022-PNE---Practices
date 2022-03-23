@@ -32,7 +32,7 @@ def seq_len(seq): #3
 def seq_count_base(seq: str, base): #4
     return seq.count(base)
 
-def seq_count(seq): #5 malllll donde esta bases
+def seq_count(seq): #5
     result = {}
     for base in BASES:
         result[base] = seq_count_base(seq, base)
