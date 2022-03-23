@@ -12,4 +12,3 @@ c = Client(SERVER_IP, SERVER_PORT)
 print("Sending a message to the server...")
 response = c.talk("Testing!")
 print(f"Response: {response}")
-
