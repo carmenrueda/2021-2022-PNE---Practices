@@ -72,3 +72,5 @@ class Seq:
         for base, count in self.count().items():
             result += f"{base}: {count} ({((count * 100) / self.len()):.1f}%)\n"
         return result
+
+

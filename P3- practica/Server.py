@@ -6,6 +6,8 @@ from Seqclass import Seq
 IP = "localhost"  # "127.0.0.1" para la máquina en la que se ejecuta
 PORT = 8080
 GENES = ["ADA", "FRAT1", "FXN", "RNU6_269P", "U5"]
+BASES_NUM = {"A": 4, "C": -3, "G": 7, "T": -6}
+BASES_ALLOWED = ["A", "C", "G", "T"]
 
 
 def get_command(gene_number):
@@ -15,6 +17,16 @@ def get_command(gene_number):
     sequence.read_fasta(file_name)
 
     response = f"{sequence}\n"
+    return response
+
+def ope_command(bases):
+    result = 0
+    for base in bases:
+        if base in BASES_ALLOWED:
+            result += BASES_NUM[base]
+            response = f"{result}\n"
+        else:
+            response = "We could not sum the bases since the sequence is not correct"
     return response
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -42,7 +54,7 @@ try:
 
                 response = f"OK!\n"
 
-            elif command == "GET" and len(slices) == 2:
+            elif command == "GET":
                 gene_number = int(slices[1])
 
                 response = get_command(gene_number)
@@ -68,24 +80,20 @@ try:
             elif command == "GENE":
                 gene = slices[1]
                 sequence = Seq()
-                file_name = os.path.join("..", "Genes", f"{gene}.txt")  # file_name = "../Genes/U5.txt"
+                file_name = os.path.join("..", "Genes", f"{gene}.txt")
                 sequence.read_fasta(file_name)
 
                 response = f"{sequence}\n"
 
-            elif command == "LEN":
-                if len(slices) == 1:
-                    sequence = Seq()
-                else:
-                    bases = slices[1]
-                    sequence = Seq(bases)
+            elif command == "OPE":
+                bases = slices[1]
 
-                response = f"{sequence.len()}\n"
+                response = ope_command(bases)
 
             else:
                 response = "Invalid command\n"
 
-        except Exception:  # IndexError | ValueError
+        except Exception:
             response = "ERROR\n"
 
         print(response)
