@@ -25,7 +25,11 @@ def http_request(client_socket):
 def http_response(path):
     body = ""
 
-    if path.startswith("/info/"): #path: /info/
+    if path == "/":
+        body = Path("index.html").read_text()
+        status_line = "HTTP/1.1 200 OK\n"
+
+    elif path.startswith("/info/"): #path: /info/
         slices = path.split("/") #slices: ["", "info", "A"]
         resource = slices[2]
         try:
@@ -57,7 +61,7 @@ try:
         print("Waiting for clients....")
         (client_socket, client_address) = server_socket.accept()
         http_request(client_socket)
-        http_response(http_request(path))
+        http_response(path)
         client_socket.close()
 
 except KeyboardInterrupt:
