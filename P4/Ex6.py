@@ -7,7 +7,6 @@ PORT = 8080
 
 
 def http_request(client_socket):
-
     req_bytes = client_socket.recv(2048)
     req = req_bytes.decode()
 
@@ -22,7 +21,9 @@ def http_request(client_socket):
     print("Request line: ", end="")
     termcolor.cprint(req_line, "green")
 
-def http_response(path):
+    return path, slices
+
+def http_response(path, slices):
     body = ""
 
     if path == "/":
@@ -60,8 +61,8 @@ try:
     while True:
         print("Waiting for clients....")
         (client_socket, client_address) = server_socket.accept()
-        http_request(client_socket)
-        http_response(path)
+        path, slices = http_request(client_socket)
+        http_response(path, slices)
         client_socket.close()
 
 except KeyboardInterrupt:
