@@ -7,7 +7,6 @@ PORT = 8080
 socketserver.TCPServer.allow_reuse_address = True
 
 class TestHandler(http.server.BaseHTTPRequestHandler):
-
     def do_GET(self):
         print("GET received! Request line:")
         termcolor.cprint("  " + self.requestline, 'green')
@@ -16,7 +15,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         return
 
 with socketserver.TCPServer(("", PORT), TestHandler) as httpd:
-    print("Serving at PORT", PORT)
+    print("Serving at PORT...", PORT)
 
     try:
         httpd.serve_forever()
