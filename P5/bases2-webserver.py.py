@@ -17,7 +17,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         else:
             resource = self.path[1:] #para quitarle la barra del principio
             try:
-                contents = Path(f"{resource}").read.text() # o quitar la variable resource y poner aqui contents=Path(f".{self.path}").read.text()
+                contents = Path(f"{resource}").read_text() # o quitar la variable resource y poner aqui contents=Path(f".{self.path}").read.text()
                 self.send_response(200)
             except FileNotFoundError:
                 contents = Path("Error.html").read_text()

@@ -1,10 +1,13 @@
+import os
 import http.server
 import socketserver
 import termcolor
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs
+from Sequence import Seq
 
 PORT = 8080
+SEQUENCES = ["U5", "ADA", "FRAT1", "FXN", "RNU6_269P"]
 
 socketserver.TCPServer.allow_reuse_address = True
 
@@ -14,37 +17,38 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         termcolor.cprint(self.requestline, 'green')
 
         if self.path == "/":
-            contents = Path('Form-ex2.html').read_text()
+            contents = Path('Form4.html').read_text()
             self.send_response(200)
 
-        elif self.path.startswith("/echo?"):
+        elif self.path == "/ping?":
+            contents = f""" 
+                <!DOCTYPE html>
+                <html lang="en">
+                    <head>
+                        <meta charset="utf-8">
+                        <title>Result</title>
+                    </head>
+                    <body>
+                        <h1>PING OK!</h1>
+                        <p>The SEQ2 server is running</p>
+                        <a href="/">Main page</a>
+                    </body>
+                </html>"""
+            self.send_response(200)
+
+        elif self.path.startswith("/get"):
             parsed_url = urlparse(self.path)
             params = parse_qs(parsed_url.query) #diccionario: key-msg ; valor-lista con 1 string (abcdefg)            try:
 
             try:
-                if len(params["msg"]) == 0:
+                seq_num= int(params["sequence_number"][0])
+                sequence = Seq()
+
                     msg_param = ""
                 else:
                     msg_param = params["msg"][0]
-                contents = f"""
-                    <!DOCTYPE html>
-                    <html lang="en">
-                        <head>
-                            <meta charset="utf-8">
-                            <title>Result</title>
-                        </head>
-                        <body>
-                            <h1>Echoing the receiving message:</h1>
-                    """
-                if 'capital_letters' in params:
-                    contents += f"<p>{msg_param.upper()}</p>"
-                else:
-                    contents += f"<p>{msg_param}</p>"
-                contents += """
-                            <a href="/">Main page</a>
-                        </body>
-                    </html>"""
-                self.send_response(200)
+
+                   
 
             except(KeyError, IndexError):
                 contents = Path(f"Error.html").read_text()
