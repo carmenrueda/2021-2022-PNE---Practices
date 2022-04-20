@@ -40,9 +40,9 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             parsed_url = urlparse(self.path)
             params = parse_qs(parsed_url.query) #diccionario: key-msg ; valor-lista con 1 string (abcdefg)
             try:
-                seq_num= int(params["sequence_number"][0])
+                seq_num = int(params["sequence_number"][0])
                 sequence = Seq()
-                filename = os.path.join("..", "Genes", f"{SEQUENCES[sequence]}")
+                filename = os.path.join("..", "Genes", f"{SEQUENCES[seq_num]}")
                 sequence.read_fasta(filename)
                 contents = f"""
                     <!DOCTYPE html>
