@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>Seq2 Server</h1>
+    <p>Access to the server</p>
+    <hr>
+    <form action="/ping" >
+     Is the server alive? <input type="submit" value="PING">
+    </form>
+    <hr>
+
+    <form action="/get">
+         Get a sequence. Select a sequence number:
+        <select name="n_sequence">
+            {% for n in range(0, context.n_sequences) %}
+            <option value={{n}}>{{n}}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="GET">
+    </form>
+    <hr>
+    <form action="/gene">
+         Get a sequence. Select a sequence number:
+        <select name="gene_name">
+            {% for g in context.genes %}
+            <option value={{g}}>{{g}}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="GENE">
+    </form>
+    <form action="/operation">
+        Sequence: <input type="text" name="sequence">
+        Rev: <input type="radio" name="operation" value="rev">
+        <input type="submit" value="OPERATE">
+    </form>
+</body>
+</html>

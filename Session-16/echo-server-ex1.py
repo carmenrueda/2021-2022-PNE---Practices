@@ -36,7 +36,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                             <a href="/">Main page</a>
                         </body>
                     </html>"""
-                self.response(200)
+                self.send_response(200)
 
             except(KeyError, IndexError):
                 contents = Path(f"Error.html").read_text()
@@ -55,10 +55,8 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
         return
 
-Handler = TestHandler
 
-
-with socketserver.TCPServer(("", PORT), Handler) as httpd:
+with socketserver.TCPServer(("", PORT), TestHandler) as httpd:
 
     print("Serving at PORT", PORT)
 
