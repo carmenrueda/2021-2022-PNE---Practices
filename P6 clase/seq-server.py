@@ -94,7 +94,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 contents = read_html_file(path[1:] + ".html") \
                     .render(context={
                     "operation": operation,
-                    "result": Seq.reverse(sequence)
+                    "result": sequence.reverse()
                 })
 
             elif operation == "info":
