@@ -36,4 +36,3 @@ try:
 except ConnectionRefusedError:
     print("ERROR! Cannot connect to the Server")
     exit()
-

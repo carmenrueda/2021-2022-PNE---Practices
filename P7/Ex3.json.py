@@ -1,10 +1,20 @@
-# -- Example of a client that uses the HTTP.client library
-# -- for requesting the main page from the server
 import http.client
 import json
 
+gene_dict = {"SCARP": "ENSG00000080603",
+             "FRAT1": "ENSG00000165879",
+             "ADA": "ENSG00000196839",
+             "FXN": "ENSG00000165060",
+             "RNU6_269P": "ENSG00000212379",
+             "MIR633": "ENSG00000207552",
+             "TTTY4C": "ENSG00000228296",
+             "RBMYY2YP": "ENSG00000228296",
+             "FGFR3": "ENSG00000068078",
+             "KDR": "ENSG00000128052",
+             "ANK2": "ENSG00000145362"}
+
 SERVER = 'rest.ensembl.org'
-ENDPOINT = '/info/ping'
+ENDPOINT = "/sequence/id/" + gene_dict["MIR633"]
 PARAMS = '?content-type=application/json'
 
 print(f"\nConnecting to server: {SERVER}\n")
@@ -26,14 +36,13 @@ try:
     data1 = r1.read().decode("utf-8")
     data1 = json.loads(data1)  # necesario pq cambia automaticamente a un integer cuando detecta str o float
 
+
+    for k, v in data1.items():
+        content_dict = {"gene": "MIR633",
+                        }
     # -- Print the received data
     print(f"CONTENT: {data1}")
 
-    if data1("ping") == 1:
-        print("ok database running")
-    else:
-        print("ERROR database not running")
 except ConnectionRefusedError:
     print("ERROR! Cannot connect to the Server")
     exit()
-
