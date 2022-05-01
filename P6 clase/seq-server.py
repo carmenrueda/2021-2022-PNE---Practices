@@ -77,7 +77,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
         if path == "/":
             """Si está vacío le enseño mi index con formato html"""
-            contents = read_html_file("html/index.html")\
+            contents = read_html_file("index.html")\
                 .render(context=
                         {"n_sequences": len(LIST_SEQUENCES),
                          "genes": LIST_GENES})
@@ -125,7 +125,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 contents = read_html_file(path[1:] + ".html") \
                     .render(context={
                     "operation": operation,
-                    "result": sequence.reverse()
+                    "result": Seq.reverse(sequence)
                 })
 
             elif operation == "info":
