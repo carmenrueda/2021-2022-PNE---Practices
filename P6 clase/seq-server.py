@@ -122,10 +122,11 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             if operation == "rev":
                 """Si eligen rev, enseño mi operation en formato html, 
                 meto las elecciones de la operación y la secuencia y enseño el reversed de mi clase Seq."""
+                sequence = Seq()
                 contents = read_html_file(path[1:] + ".html") \
                     .render(context={
                     "operation": operation,
-                    "result": Seq.reverse(sequence)
+                    "result": sequence.reverse()
                 })
 
             elif operation == "info":
@@ -138,10 +139,11 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
             elif operation == "comp":
                 """Si me piden comp igual con el complement de mi clase Seq."""
+                sequence = Seq()
                 contents = read_html_file(path[1:] + ".html") \
                     .render(context={
                     "operation": operation,
-                    "result": Seq.complement(sequence)
+                    "result": sequence.complement()
                 })
 
         else:
