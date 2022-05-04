@@ -7,3 +7,6 @@
       {"number": "333", "type" : "office"}
     ]
 }
+# todo esto es un objeto
+# ahora cada numero de telefonos es un objeto en json (Dict) con clave numero y clave tipo
+#phone number es una lista de diccionarios (Array) en el diccionario de json

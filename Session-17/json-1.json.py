@@ -3,13 +3,10 @@ import termcolor
 from pathlib import Path
 
 # -- Read the json file
-jsonstring = Path("people-1.json").read_text()
+jsonstring = Path("people-1.json").read_text() #str
 
 # Create the object person from the json string
-person = json.loads(jsonstring)
-
-# Person is now a dictionary. We can read the values
-# associated to the fields 'Firstname', 'Lastname' and 'age'
+person = json.loads(jsonstring) # dict = {'Firstname': 'Troll', 'Lastname':'Face and 'age':37}
 
 # -- Read the Firtname
 firstname = person['Firstname']

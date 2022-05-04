@@ -117,7 +117,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         elif path == "/operation":
             """Si me piden operation muestro primero la lista de genes y luego la de posibles operaciones"""
             sequence = arguments["sequence"][0]
-            operation = arguments["operation"][0]
+            operation = arguments["op"][0]
 
             if operation == "rev":
                 """Si eligen rev, enseño mi operation en formato html, 
