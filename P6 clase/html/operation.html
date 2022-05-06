@@ -14,9 +14,9 @@
         <input type="text" name="sequence">
         <br>
         Select an operation
-            <input type="radio" name="op" value="info" checked> Info
-            <input type="radio" name="op" value="comp" checked> Comp
-            <input type="radio" name="op" value="rev" checked> Rev
+            <input type="radio" name="operation" value="info" checked> Info
+            <input type="radio" name="operation" value="comp" checked> Comp
+            <input type="radio" name="operation" value="rev" checked> Rev
             <br>
         Perform operation:
         <input type="submit" value="OPERATE">
@@ -24,3 +24,16 @@
   </body>
 </html>
 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Seq2 Server</title>
+</head>
+<body>
+    <h2>Gene name: {{context.gene_name}}</h2>
+    Sequence: <p><textarea>{{context.sequence}} </textarea></p>
+    <a href="/">Main page</a>
+</body>
+</html>
