@@ -68,7 +68,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             elif endpoint =="/geneSeq":
                 if len(params) == 1:
                     try:
-                        gene = int(params['species'][0])
+                        gene = int(params['gene'][0])
                         status, contents = tools.gene_seq(gene)
                     except (KeyError, IndexError):
                         error = True
@@ -88,6 +88,20 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             elif endpoint =="/geneCalc":
                 if len(params) == 1:
                     try:
+                        gene = params['gene'][0]
+                        status, contents = tools.gene_calc(gene)
+                    except (KeyError, IndexError):
+                        error = True
+                else:
+                    error = True
+
+            elif endpoint =="/geneList":
+                if len(params) == 3:
+                    try:
+                        chromo = int(params['chromo'][0])
+                        start = int(params['start'][0])
+
+                        chromo = int(params['chromo'][0])
                         gene = params['gene'][0]
                         status, contents = tools.gene_calc(gene)
                     except (KeyError, IndexError):
