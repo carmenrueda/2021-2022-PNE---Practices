@@ -6,7 +6,7 @@ import termcolor
 import tools
 
 PORT = 8080
-HTML_FOLDER = "./html/"
+HTML = "./html/"
 VALID_ENDPOINTS = ["/", "listSpecies", "/karyotype", "/chromosomeLength", "/geneSeq", "/geneInfo", "/geneCalc", "geneList"]
 
 socketserver.TCPServer.allow_reuse_address = True
@@ -19,95 +19,98 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
         url = urlparse(self.path)
         endpoint = url.path
-        params = parse_qs(url.query)
+        arg = parse_qs(url.query)
 
         print(f"Endpoint: {endpoint}")
-        print(f"Parameters: {params}")
+        print(f"Parameters: {arg}")
 
-        error = False
+        error = True
         contents = ""
         status = 400
 
-        if endpoint in VALID_ENDPOINTS:
-            if endpoint == "/":
-                status = 200
-                contents = Path(HTML_FOLDER + "index.html").read_text()
+        while not error:
 
-            elif endpoint == "/listSpecies":
-                if len(params) == 0:
-                    status, contents = tools.list_species()
-                elif len(params) == 1:
-                    try:
-                        limit = int(params['limit'][0])
-                    except (ValueError, KeyError, IndexError):
-                        error = True
-                else:
-                    error = True
+            if endpoint in VALID_ENDPOINTS:
+                if endpoint == "/":
+                    status = 200
+                    contents = Path(HTML + "index.html").read_text()
 
-            elif endpoint =="/karyotype":
-                if len(params) == 1:
-                    try:
-                        species = int(params['species'][0])
-                        status, contents = tools.karyotype()
-                    except (KeyError, IndexError):
-                        error = True
-                else:
-                    error = True
+                elif endpoint == "/listSpecies":
+                    if len(arg) == 0:
+                        status, contents = tools.list_species()
+                    elif len(arg) == 1:
+                        try:
+                            limit = int(arg['limit'][0])
+                            status, contents = tools.list_species(limit)
+                        except (ValueError, KeyError, IndexError):
+                            error = False
+                    else:
+                        error = False
 
-            elif endpoint =="/chromosomeLength":
-                if len(params) == 2:
-                    try:
-                        species = int(params['species'][0])
-                        chromosomes = params['chromosomes'][0]
-                        status, contents = tools.chrom_length(species, chromosomes)
-                    except (KeyError, IndexError):
-                        error = True
-                else:
-                    error = True
+                elif endpoint == "/karyotype":
+                    if len(arg) == 1:
+                        try:
+                            species = int(arg['species'][0])
+                            status, contents = tools.karyotype(species)
+                        except (KeyError, IndexError):
+                            error = False
+                    else:
+                        error = False
 
-            elif endpoint =="/geneSeq":
-                if len(params) == 1:
-                    try:
-                        gene = int(params['gene'][0])
-                        status, contents = tools.gene_seq(gene)
-                    except (KeyError, IndexError):
-                        error = True
-                else:
-                    error = True
+                elif endpoint == "/chromosomeLength":
+                    if len(arg) == 2:
+                        try:
+                            species = int(arg['species'][0])
+                            chromosomes = arg['chromosomes'][0]
+                            status, contents = tools.chrom_length(species, chromosomes)
+                        except (KeyError, IndexError):
+                            error = False
+                    else:
+                        error = False
 
-            elif endpoint =="/geneInfo":
-                if len(params) == 1:
-                    try:
-                        gene = params['gene'][0]
-                        status, contents = tools.gene_info(gene)
-                    except (KeyError, IndexError):
-                        error = True
-                else:
-                    error = True
+                elif endpoint == "/geneSeq":
+                    if len(arg) == 1:
+                        try:
+                            gene = int(arg['gene'][0])
+                            status, contents = tools.gene_seq(gene)
+                        except (KeyError, IndexError):
+                            error = False
+                    else:
+                        error = False
 
-            elif endpoint =="/geneCalc":
-                if len(params) == 1:
-                    try:
-                        gene = params['gene'][0]
-                        status, contents = tools.gene_calc(gene)
-                    except (KeyError, IndexError):
-                        error = True
-                else:
-                    error = True
+                elif endpoint == "/geneInfo":
+                    if len(arg) == 1:
+                        try:
+                            gene = arg['gene'][0]
+                            status, contents = tools.gene_info(gene)
+                        except (KeyError, IndexError):
+                            error = False
+                    else:
+                        error = False
 
-            elif endpoint =="/geneList":
-                if len(params) == 3:
-                    try:
-                        chromo = int(params['chromo'][0])
-                        start = int(params['start'][0])
+                elif endpoint == "/geneCalc":
+                    if len(arg) == 1:
+                        try:
+                            gene = arg['gene'][0]
+                            status, contents = tools.gene_calc(gene)
+                        except (KeyError, IndexError):
+                            error = False
+                    else:
+                        error = False
 
-                        chromo = int(params['chromo'][0])
-                        gene = params['gene'][0]
-                        status, contents = tools.gene_calc(gene)
-                    except (KeyError, IndexError):
-                        error = True
-                else:
-                    error = True
+                elif endpoint == "/geneList":
+                    if len(arg) == 3:
+                        try:
+                            chromo = int(arg['chromo'][0])
+                            start = int(arg['start'][0])
+
+                            chromo = int(arg['chromo'][0])
+                            gene = arg['gene'][0]
+                            status, contents = tools.gene_calc(gene)
+                        except (KeyError, IndexError):
+                            error = False
+                    else:
+                        error = False
 
 
 

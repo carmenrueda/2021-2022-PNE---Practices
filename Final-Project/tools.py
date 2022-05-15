@@ -6,12 +6,12 @@ from Seq1 import Seq
 
 
 SERVER = "http://rest.ensembl.org"
-HTML_FOLDER = "./html/"
+HTML = "./html/"
 valid = 200
 error = 400
 
 def read_html_file(filename):
-    contents = Path(HTML_FOLDER + filename).read_text()
+    contents = Path(HTML + filename).read_text()
     contents = jinja2.Template(contents)
     return contents
 
@@ -29,7 +29,7 @@ def list_species(limit=None):
         data = json.loads(response.read().decode("utf8"))
         try:
             species = data["species"]
-            contents = read_html_file(HTML_FOLDER + "species.html")\
+            contents = read_html_file(HTML + "species.html")\
                 .render(context={
                 "total": len(species),
                 "species": species,
@@ -37,10 +37,10 @@ def list_species(limit=None):
             })
         except KeyError:
             status = error
-            contents = Path(HTML_FOLDER + "error.html").read_text()
+            contents = Path(HTML + "error.html").read_text()
     else:
         status = error
-        contents = Path(HTML_FOLDER + "error.html").read_text()
+        contents = Path(HTML + "error.html").read_text()
 
 def karyotype(species):
     endpoint = '/info/assembly/'
@@ -56,16 +56,16 @@ def karyotype(species):
         data = json.loads(response.read().decode("utf8"))
         try:
             karyotype = data["karyotype"]
-            contents = read_html_file(HTML_FOLDER + "karyotype.html")\
+            contents = read_html_file(HTML + "karyotype.html")\
                 .render(context={
                 "karyotype": karyotype
             })
         except KeyError:
             status = error
-            contents = Path(HTML_FOLDER + "error.html").read_text()
+            contents = Path(HTML + "error.html").read_text()
     else:
         status = error
-        contents = Path(HTML_FOLDER + "error.html").read_text()
+        contents = Path(HTML + "error.html").read_text()
 
 
 def chrom_length(species, chromosomes):
@@ -87,16 +87,16 @@ def chrom_length(species, chromosomes):
                 if chromosome['name'] == chromosomes:
                     lenght = chromosomes['length']
                     break
-            contents = read_html_file(HTML_FOLDER + "species.html")\
+            contents = read_html_file(HTML + "species.html")\
                 .render(context={
                 "length": len,
             })
         except KeyError:
             status = error
-            contents = Path(HTML_FOLDER + "error.html").read_text()
+            contents = Path(HTML + "error.html").read_text()
     else:
         status = error
-        contents = Path(HTML_FOLDER + "error.html").read_text()
+        contents = Path(HTML + "error.html").read_text()
 
 def get_id(gene):
     endpoint = '/homology/symbol/human/'
@@ -136,17 +136,17 @@ def gene_seq(gene):
             data = json.loads(response.read().decode("utf8"))
             try:
                 bases = data['seq']
-                contents = read_html_file(HTML_FOLDER + "gene_seq.html") \
+                contents = read_html_file(HTML + "gene_seq.html") \
                     .render(context={
                     "gene": gene,
                     "bases": bases
                 })
             except KeyError:
                 status = error
-                contents = Path(HTML_FOLDER + "error.html").read_text()
+                contents = Path(HTML + "error.html").read_text()
         else:
             status = error
-            contents = Path(HTML_FOLDER + "error.html").read_text()
+            contents = Path(HTML + "error.html").read_text()
 
         return status, contents
 
