@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>Gene Sequence</title>
-    </head>
-    <body style="background: dodgerblue">
-        <h1> GENE: {{context.gene}}</h1>
-        <label for="gene_content">Bases:</label>
-        <br>
-        <textarea id="gene_content" name="gene_bases" rows="100" cols="100" {{context.bases}} </textarea>
-    </body>
+<html lang="en" dir="ltr" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+  <head>
+    <meta charset="utf-8">
+    <title>Gene Seq</title>
+  </head>
+  <body style="background: lightgreen">
+    <h1>GENE {{context.gene}}</h1>
+    <label for="gene_content">Bases:</label><br>
+    <textarea id="gene_content" name="gene_bases" rows="100" cols="100">
+        {{context.bases}}
+    </textarea>
+  </body>
 </html>

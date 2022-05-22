@@ -2,14 +2,9 @@
 <html lang="en" dir="ltr" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
   <head>
     <meta charset="utf-8">
-    <title>Karyotype</title>
+    <title>Chromosome Length</title>
   </head>
   <body style="background: lightblue">
-    <p>The name of the chromosomes are:</p>
-    <ul>
-    {% for chromosome in context.karyotype: %}
-      <li>{{chromosome}}</li>
-    {% endfor %}
-    </ul>
+    <p>The length of the chromosome {{context.chromosome}} of the {{context.specie}} is: {{context.length}}</p>
   </body>
 </html>

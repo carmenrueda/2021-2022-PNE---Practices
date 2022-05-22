@@ -49,8 +49,8 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             elif endpoint == "/karyotype":
                 if len(arg) == 1:
                     try:
-                        species = int(arg['species'][0])
-                        status, contents = tools.karyotype(species)
+                        specie = arg['specie'][0]
+                        status, contents = tools.karyotype(specie)
                     except (KeyError, IndexError):
                         bad_request = True
                 else:
@@ -60,8 +60,8 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 if len(arg) == 2:
                     try:
                         species = arg['specie'][0]
-                        chromosome = arg['chromo'][0]
-                        status, contents = tools.chromosome_length(species, chromosome)
+                        chromo = arg['chromosome'][0]
+                        status, contents = tools.chromosome_length(species, chromo)
                     except (KeyError, IndexError):
                         bad_request = True
                 else:
