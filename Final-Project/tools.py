@@ -41,9 +41,9 @@ def get_response(endpoint, arg):
     response = conn.getresponse()
     status = OK
     contents = ""
+    data = json.loads(response.read().decode("utf8"))
+    print(data)
     if response.status == OK:
-        data = json.loads(response.read().decode("utf8"))
-        print(data)
         status = OK
     elif response.status == ERROR:
         status, contents = error_html()
@@ -89,96 +89,66 @@ def chromosome_length(species, chromosome):
 
     endpoint = '/info/assembly/'
     arg = f'{species}?content-type=application/json'
-    status, data = get_response(endpoint, arg)
+    status, data, contents = get_response(endpoint, arg)
     try:
         top_level_region = data["top_level_region"]
-        length = 0
         for chromosome_interest in top_level_region:
             if chromosome_interest['name'] == chromosome:
                 length = chromosome_interest['length']
-        context = {"chromosome": chromosome, "specie": species, "length": length}
-        contents = cont("chromo_length.html", context)
+                context = {"chromosome": chromosome, "specie": species, "length": length}
+                contents = cont("chromo_length.html", context)
     except KeyError:
         status, contents = error_html()
     return status, contents
 
 
-def get_id(gene):
-    endpoint = '/homology/symbol/human/'
-    arg = f'{gene}?content-type=application/json'
-    valid = True
-    id = None
-    status, data = get_response(endpoint, arg)
+def gene_id(gene):
+    genes_dict = {"SRCAP": "ENSG00000080603",
+                  "FRAT1": "ENSG00000165879",
+                  "ADA": "ENSG00000196839",
+                  "FXN": "ENSG00000165060",
+                  "RNU6_269P": "ENSG00000212379",
+                  "MIR633": "ENSG00000207552",
+                  "TTTY4C": "ENSG00000228296",
+                  "RBMY2YP": "ENSG00000227633",
+                  "FGFR3": "ENSG00000068078",
+                  "KDR": "ENSG00000128052",
+                  "ANK2": "ENSG00000145362"}
+    endpoint = f"/sequence/id/{genes_dict[gene]}"
+    arg = '?content-type=application/json'
+    status, data, contents = get_response(endpoint, arg)
     try:
-        id = data['data'][0]['id']
-    except (KeyError, IndexError):
-        valid = False
-    return valid, id
-
-
-def gene_seq(gene):
-    valid, id = get_id(gene)
-    if valid:
-        endpoint = '/sequence/id/'
-        arg = f'{id}?content-type=application/json'
-        status, data = get_response(endpoint, arg)
-        try:
-            bases = data['seq']
-            context = {"gene": gene, "bases": bases}
-            contents = cont("gene_seq.html", context)
-        except KeyError:
-            status, contents = error_html()
-    else:
+        bases = data['seq']
+        context = {"gene": gene, "bases": bases}
+        contents = cont("gene_seq.html", context)
+    except KeyError:
         status, contents = error_html()
     return status, contents
-
 
 def gene_info(gene):
-    valid, id = get_id(gene)
-    if valid:
-        endpoint = '/overlap/id/'
-        arg = f'{id}?feature=gene;content-type=application/json'
-        status, data = get_response(endpoint, arg)
-        try:
-            start = data[0]['start']
-            end = data[0]['end']
-            length = end - start
-            chrom_name = data[0]['assembly_name']
-            context = {"gene": gene, "start": start, "end": end, "id": id, "length": length,"chromosome_name": chrom_name}
-            contents = cont("gene_info.html", context)
-        except KeyError:
-            status, contents = error_html()
-    else:
-        status, contents = error_html()
-    return status, contents
-
-
-def gene_calc(gene):
-    valid, id = get_id(gene)
-    if valid:
-        endpoint = '/sequence/id/'
-        arg = f'{id}?content-type=application/json'
-        status, data = get_response(endpoint, arg)
-        try:
-            bases = data['seq']
-            seq = Seq(bases)
-            context = {"gene": gene, "seq": seq}
-            contents = cont("gene_calc.html", context)
-        except KeyError:
-            status, contents = error_html()
-    else:
-        status, contents = error_html()
-    return status, contents
-
-
-def gene_list(chromo, start, end):
-    endpoint = '/overlap/region/human/'
-    arg = f'{chromo}:{start}-{end}?content-type=application/json;feature=gene;feature=transcript;feature=cds;feature=exon'
-    status, data = get_response(endpoint, arg)
+    genes_dict = {"SRCAP": "ENSG00000080603",
+                  "FRAT1": "ENSG00000165879",
+                  "ADA": "ENSG00000196839",
+                  "FXN": "ENSG00000165060",
+                  "RNU6_269P": "ENSG00000212379",
+                  "MIR633": "ENSG00000207552",
+                  "TTTY4C": "ENSG00000228296",
+                  "RBMY2YP": "ENSG00000227633",
+                  "FGFR3": "ENSG00000068078",
+                  "KDR": "ENSG00000128052",
+                  "ANK2": "ENSG00000145362"}
+    endpoint = f"/sequence/id/{genes_dict[gene]}"
+    arg = '?content-type=application/json'
+    status, data, contents = get_response(endpoint, arg)
     try:
-        context = {"data": data}
-        contents = cont("gene_list.html", context)
+        id = data['id']
+
+
+        start = data[0]['start']
+        end = data[0]['end']
+        length = end - start
+        chrom_name = data[0]['assembly_name']
+        context = {"gene": gene, "start": start, "end": end, "id": id, "length": length, "chromosome_name": chrom_name}
+        contents = cont("gene_info.html", context)
     except KeyError:
         status, contents = error_html()
-    return status, contents
-

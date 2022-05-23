@@ -41,6 +41,7 @@ if response.status == HTTPStatus.OK:
 
     data = response.read().decode("utf-8")
     data = json.loads(data)
+    print(data)
     print(f"Gene: {GENE}")
     print(f"Description: {data['desc']}")
     print(f"Sequence: {data['seq']}")
