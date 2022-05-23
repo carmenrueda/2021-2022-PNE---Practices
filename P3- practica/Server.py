@@ -26,7 +26,7 @@ def ope_command(bases):
             result += BASES_NUM[base]
             response = f"{result}\n"
         else:
-            response = "We could not sum the bases since the sequence is not correct"
+            response = "We could not sum the html since the sequence is not correct"
     return response
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

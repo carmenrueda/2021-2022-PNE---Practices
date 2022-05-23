@@ -92,7 +92,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             parsed_url = urlparse(self.path)
             params = parse_qs(parsed_url.query)  # diccionario: key-msg ; valor-lista con 1 string (abcdefg)
             try:
-                bases = params["bases"][0]
+                bases = params["html"][0]
                 op = params["op"][0]
                 if op in ["info", "comp", "rev"]:
                     sequence = Seq(bases)

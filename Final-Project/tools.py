@@ -25,9 +25,9 @@ def error_html():
 
 def get_response(endpoint, params):
     url = endpoint + params
-    connection = http.client.HTTPConnection(SERVER)
-    connection.request("GET", url)
-    response = connection.getresponse()
+    conn = http.client.HTTPConnection(SERVER)
+    conn.request("GET", url)
+    response = conn.getresponse()
     status = OK
     data = None
     if response.status == OK:
@@ -37,13 +37,19 @@ def get_response(endpoint, params):
     return status, data
 
 
+def cont(file, context):
+    contents = read_html_file(file).render(context=context)
+    return contents
+
+
 def list_species(limit=None):
     endpoint = '/info/species'
     arg = '?content-type=application/json'
     status, data = get_response(endpoint, arg)
     try:
         species = data['species']
-        contents = read_html_file("species.html").render(context={"total": len(species), "species": species, "limit": limit})
+        context = {"total": len(species), "species": species, "limit": limit}
+        contents = cont("species.html", context)
     except KeyError:
         status, contents = error_html()
     return status, contents
@@ -55,24 +61,33 @@ def karyotype(specie):
     status, data = get_response(endpoint, arg)
     try:
         karyotype = data['karyotype']
-        contents = read_html_file("karyotype.html").render(context={"karyotype": karyotype})
+        context = {"karyotype": karyotype}
+        contents = cont("karyotype.html", context)
     except KeyError:
         status, contents = error_html()
     return status, contents
 
 
-def chromosome_length(specie, chromo):
+def chromosome_length(species, chromosome):
+
+    '''En arg hay dos diccionarios: uno con la key specie y value human,
+    y otro con keys como assembly_name, karyotype, top_level_region...
+    Accedemos a la key top_level_region.
+    El valor de la key es una lista de diccionarios de los distintos cromosomas.
+    Cada diccionario contiene keys como name, length...
+    Accedemos a nuestro cromosoma por su nombre y llamamos a la key length de ese cromosoma.'''
+
     endpoint = '/info/assembly/'
-    arg = f'{specie}?content-type=application/json'
+    arg = f'{species}?content-type=application/json'
     status, data = get_response(endpoint, arg)
     try:
-        chromosome_dict = data["top_level_region"]
+        top_level_region = data["top_level_region"]
         length = 0
-        for c in chromosome_dict:
-            if c['name'] == chromo:
-                length = c['length']
-                break
-        contents = read_html_file("chromo_length.html").render(context={"chromosome": chromo, "specie": specie, "length": length})
+        for chromosome_interest in top_level_region:
+            if chromosome_interest['name'] == chromosome:
+                length = chromosome_interest['length']
+        context = {"chromosome": chromosome, "specie": species, "length": length}
+        contents = cont("chromo_length.html", context)
     except KeyError:
         status, contents = error_html()
     return status, contents
@@ -99,7 +114,8 @@ def gene_seq(gene):
         status, data = get_response(endpoint, arg)
         try:
             bases = data['seq']
-            contents = read_html_file("gene_seq.html").render(context={"gene": gene, "bases": bases})
+            context = {"gene": gene, "bases": bases}
+            contents = cont("gene_seq.html", context)
         except KeyError:
             status, contents = error_html()
     else:
@@ -118,7 +134,8 @@ def gene_info(gene):
             end = data[0]['end']
             length = end - start
             chrom_name = data[0]['assembly_name']
-            contents = read_html_file("gene_info.html").render(context={"gene": gene, "start": start, "end": end, "id": id, "length": length, "chromosome_name": chrom_name})
+            context = {"gene": gene, "start": start, "end": end, "id": id, "length": length,"chromosome_name": chrom_name}
+            contents = cont("gene_info.html", context)
         except KeyError:
             status, contents = error_html()
     else:
@@ -135,7 +152,8 @@ def gene_calc(gene):
         try:
             bases = data['seq']
             seq = Seq(bases)
-            contents = read_html_file("gene_calc.html").render(context={"gene": gene, "seq": seq})
+            context = {"gene": gene, "seq": seq}
+            contents = cont("gene_calc.html", context)
         except KeyError:
             status, contents = error_html()
     else:
@@ -148,7 +166,8 @@ def gene_list(chromo, start, end):
     arg = f'{chromo}:{start}-{end}?content-type=application/json;feature=gene;feature=transcript;feature=cds;feature=exon'
     status, data = get_response(endpoint, arg)
     try:
-        contents = read_html_file("gene_list.html").render(context={"data": data})
+        context = {"data": data}
+        contents = cont("gene_list.html", context)
     except KeyError:
         status, contents = error_html()
     return status, contents

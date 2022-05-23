@@ -12,6 +12,7 @@ LIST_SEQUENCES = ["ACGTCCAGTAAA", "ACGTAGTTTTTAAACCC", "GGGTAAACTACG",
                   "CGTAGTACGTA", "TGCATGCCGAT", "ATATATATATATATATATA"]
 LIST_GENES = ["ADA", "FRAT1", "FXN", "RNU5A", "U5"]
 
+
 def read_html_file(filename):
     contents = Path(HTML_FOLDER + filename).read_text()
     """Return the decoded contents of the pointed-to file (./html/html) as a string"""
@@ -26,10 +27,10 @@ def count_bases(seq):
     d = {"A": 0, "C": 0, "G": 0, "T": 0}
     for b in seq:
         d[b] += 1
-    """suma 1 a cada value de las bases que se encuentra en la iteration y se queda en forma de diccionario"""
+    """suma 1 a cada value de las html que se encuentra en la iteration y se queda en forma de diccionario"""
 
     total = sum(d.values())
-    """el total de bases será la suma de todos los values"""
+    """el total de html será la suma de todos los values"""
     for k, v in d.items():
         d[k] = [v, (v * 100) / total]
         """d = {"A": [4, 20], "C": [8, 25], "G": [12, 30], "T": [8, 25]} 

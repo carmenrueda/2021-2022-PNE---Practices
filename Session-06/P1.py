@@ -7,7 +7,7 @@ class Seq:
         i = 0
         valid = len(bases[i]) != 0
         while valid and i < len(bases):
-            if bases[i] not in Seq.BASES_ALLOWED: #si saco fuera de la clase la lista de bases allowed no me hace falta poner Seq. cuando la llame
+            if bases[i] not in Seq.BASES_ALLOWED: #si saco fuera de la clase la lista de html allowed no me hace falta poner Seq. cuando la llame
                 valid = False
             i += 1
         return valid
