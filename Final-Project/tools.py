@@ -23,17 +23,9 @@ def error_html():
     return status, contents
 
 
-def get_response(endpoint, params):
-    url = endpoint + params
-    conn = http.client.HTTPConnection(SERVER)
-    conn.request("GET", url)
-    response = conn.getresponse()
+def ok_response(response):
     status = OK
-    data = None
-    if response.status == OK:
-        data = json.loads(response.read().decode("utf8"))
-    elif response.status == ERROR:
-        status, contents = error_html()
+    data = json.loads(response.read().decode("utf8"))
     return status, data
 
 
@@ -42,29 +34,47 @@ def cont(file, context):
     return contents
 
 
+def get_response(endpoint, arg):
+    url = endpoint + arg
+    conn = http.client.HTTPConnection(SERVER)
+    conn.request("GET", url)
+    response = conn.getresponse()
+    status = OK
+    contents = ""
+    if response.status == OK:
+        data = json.loads(response.read().decode("utf8"))
+        print(data)
+        status = OK
+    elif response.status == ERROR:
+        status, contents = error_html()
+        data = 0
+    return status, data, contents
+
+
 def list_species(limit=None):
     endpoint = '/info/species'
     arg = '?content-type=application/json'
-    status, data = get_response(endpoint, arg)
+    status, data, contents = get_response(endpoint, arg)
     try:
         species = data['species']
+        file = "species.html"
         context = {"total": len(species), "species": species, "limit": limit}
-        contents = cont("species.html", context)
+        contents = cont(file, context)
     except KeyError:
-        status, contents = error_html()
+        status, data = error_html()
     return status, contents
 
 
 def karyotype(specie):
     endpoint = '/info/assembly/'
     arg = f'{specie}?content-type=application/json'
-    status, data = get_response(endpoint, arg)
+    status, data, contents = get_response(endpoint, arg)
     try:
         karyotype = data['karyotype']
         context = {"karyotype": karyotype}
         contents = cont("karyotype.html", context)
     except KeyError:
-        status, contents = error_html()
+      status, contents = error_html()
     return status, contents
 
 
@@ -171,3 +181,4 @@ def gene_list(chromo, start, end):
     except KeyError:
         status, contents = error_html()
     return status, contents
+
