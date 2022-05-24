@@ -9,6 +9,17 @@ SERVER = "rest.ensembl.org"
 HTML = "./html/"
 OK = 200
 ERROR = 400
+genes_dict = {"SRCAP": "ENSG00000080603",
+              "FRAT1": "ENSG00000165879",
+              "ADA": "ENSG00000196839",
+              "FXN": "ENSG00000165060",
+              "RNU6_269P": "ENSG00000212379",
+              "MIR633": "ENSG00000207552",
+              "TTTY4C": "ENSG00000228296",
+              "RBMY2YP": "ENSG00000227633",
+              "FGFR3": "ENSG00000068078",
+              "KDR": "ENSG00000128052",
+              "ANK2": "ENSG00000145362"}
 
 
 def read_html_file(filename):
@@ -41,13 +52,12 @@ def get_response(endpoint, arg):
     response = conn.getresponse()
     status = OK
     contents = ""
-    data = json.loads(response.read().decode("utf8"))
-    print(data)
+    data = {}
     if response.status == OK:
-        status = OK
-    elif response.status == ERROR:
+        data = json.loads(response.read().decode("utf8"))
+        print("Data:", data)
+    else:
         status, contents = error_html()
-        data = 0
     return status, data, contents
 
 
@@ -92,28 +102,22 @@ def chromosome_length(species, chromosome):
     status, data, contents = get_response(endpoint, arg)
     try:
         top_level_region = data["top_level_region"]
-        for chromosome_interest in top_level_region:
-            if chromosome_interest['name'] == chromosome:
-                length = chromosome_interest['length']
-                context = {"chromosome": chromosome, "specie": species, "length": length}
+        length = 0
+        for dicts_chrom in top_level_region:
+            try:
+                if dicts_chrom['name'] == chromosome:
+                    length = dicts_chrom['length']
+                    break
+                context = {"specie": species, "chromosome": chromosome, "length": length}
                 contents = cont("chromo_length.html", context)
+            except (KeyError, ValueError, IndexError):
+                status, contents = error_html()
     except KeyError:
         status, contents = error_html()
     return status, contents
 
 
-def gene_id(gene):
-    genes_dict = {"SRCAP": "ENSG00000080603",
-                  "FRAT1": "ENSG00000165879",
-                  "ADA": "ENSG00000196839",
-                  "FXN": "ENSG00000165060",
-                  "RNU6_269P": "ENSG00000212379",
-                  "MIR633": "ENSG00000207552",
-                  "TTTY4C": "ENSG00000228296",
-                  "RBMY2YP": "ENSG00000227633",
-                  "FGFR3": "ENSG00000068078",
-                  "KDR": "ENSG00000128052",
-                  "ANK2": "ENSG00000145362"}
+def gene_seq(gene):
     endpoint = f"/sequence/id/{genes_dict[gene]}"
     arg = '?content-type=application/json'
     status, data, contents = get_response(endpoint, arg)
@@ -126,29 +130,50 @@ def gene_id(gene):
     return status, contents
 
 def gene_info(gene):
-    genes_dict = {"SRCAP": "ENSG00000080603",
-                  "FRAT1": "ENSG00000165879",
-                  "ADA": "ENSG00000196839",
-                  "FXN": "ENSG00000165060",
-                  "RNU6_269P": "ENSG00000212379",
-                  "MIR633": "ENSG00000207552",
-                  "TTTY4C": "ENSG00000228296",
-                  "RBMY2YP": "ENSG00000227633",
-                  "FGFR3": "ENSG00000068078",
-                  "KDR": "ENSG00000128052",
-                  "ANK2": "ENSG00000145362"}
     endpoint = f"/sequence/id/{genes_dict[gene]}"
     arg = '?content-type=application/json'
     status, data, contents = get_response(endpoint, arg)
     try:
         id = data['id']
-
-
-        start = data[0]['start']
-        end = data[0]['end']
+        desc = data['desc']
+        desc = desc.split(':')
+        chrom_name = desc[1]
+        start = int(desc[3])
+        end = int(desc[4])
         length = end - start
-        chrom_name = data[0]['assembly_name']
         context = {"gene": gene, "start": start, "end": end, "id": id, "length": length, "chromosome_name": chrom_name}
         contents = cont("gene_info.html", context)
     except KeyError:
         status, contents = error_html()
+    return status, contents
+
+def gene_calc(gene):
+    endpoint = f"/sequence/id/{genes_dict[gene]}"
+    arg = '?content-type=application/json'
+    status, data, contents = get_response(endpoint, arg)
+    BASES = {"A":0, "C":0, "G":0, "T":0}
+    try:
+        seq = data['seq']
+        base_percent = 0
+        for base, percent in BASES.items():
+            base_percent = round((seq.count(base) * 100) / len(seq), 2)
+            BASES[base] = base_percent
+        context = {"gene": gene, "length": len(seq), "base_percent": base_percent}
+        contents = cont("gene_calc.html", context)
+    except KeyError:
+        status, contents = error_html()
+    return status, contents
+
+    '''try:
+        seq = data['seq']
+        length = len(seq)
+        A = round((seq.count("A") * 100) / len(seq), 2)
+        C = round((seq.count("C") * 100) / len(seq), 2)
+        T = round((seq.count("T") * 100) / len(seq), 2)
+        G = round((seq.count("G") * 100) / len(seq), 2)
+        context = {"gene": gene, "length": length, "A": A, "C": C, "G": G, "T": T}
+        contents = cont("gene_calc.html", context)
+    except KeyError:
+        status, contents = error_html()
+    return status, contents'''
+
