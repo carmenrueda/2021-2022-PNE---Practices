@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <title>Gene Info</title>
@@ -13,11 +13,3 @@
   </body>
 </html>
 
-
-      {% for item in context.data: %}
-        {% if 'logic_name' in item %}
-          <li>{{item['external_name']}} {{item['start']}} {{item['end']}}</li>
-        {% else %}
-          <li>{{item['id']}} {{item['start']}} {{item['end']}} </li>
-        {% endif %}
-      {% endfor %}

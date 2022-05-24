@@ -33,7 +33,6 @@ def cont(file, context):
 
 def get_response(endpoint, arg):
     url = endpoint + arg
-    print("URL", url)
     conn = http.client.HTTPConnection(SERVER)
     conn.request("GET", url)
     response = conn.getresponse()
@@ -157,21 +156,18 @@ def gene_list(chromosome, start, end):
     arg = '?content-type=application/json'
     status, data, contents = get_response(endpoint, arg)
     try:
-        my_associated_genes = []
-        list_data = data[0]
-        for e in list_data:
-            print("E IN LIST_DATA:", e)
-            if e == "phenotype_association":
-                phenotype_association = e
-                for n in phenotype_association:
-                    print("N IN PHENOTYPE_ASSOCIATION:", n)
-                    if n == "attributes":
-                        attributes = n
-                        for atrib in attributes.keys():
-                            print("ATRIB IN ATTRIB KEYS:", atrib)
-                            if atrib == "associated_gene":
-                                my_associated_genes.append(atrib)
-        context = {"my_associated_genes": my_associated_genes}
+        associated_genes = []
+        for d in data: #data is a list of dictionaries
+            if "phenotype_associations" in d: #if that key is in the dictionary que se está recorriendo
+                pheno = d["phenotype_associations"] #pheno is the value associated to the key, que a su vez es una lista de diccionarios
+                for p in pheno: #recorremos la lista pheno de diccionarios
+                    if "attributes" in p: #if that key is in the dictionary que se está recorriendo
+                        attributes = p["attributes"] #attributes is the value associated to the key
+                        for a in attributes.keys(): #recorremos las keys de attributes
+                            if a == "associated_gene": #si la key se llama associated gene
+                                a = attributes["associated_gene"] #a es el value que buscamos
+                                associated_genes.append(a) #lo metemos en una lista
+        context = {"associated_genes": associated_genes}
         contents = cont("gene_list.html", context)
     except KeyError:
         status, contents = error_html()

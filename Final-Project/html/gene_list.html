@@ -1,10 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <title>Gene List</title>
   </head>
   <body style="background: lightgreen">
-    <p>my_associated_genes: {{context.my_associated_genes}}</p>
+      <p>The name of the genes located in the chromosome "chromo" are:</p>
+    <ul>
+    {% for gene in context.associated_genes: %}
+      <li>{{gene}}</li>
+    {% endfor %}
+    </ul>
   </body>
 </html>
