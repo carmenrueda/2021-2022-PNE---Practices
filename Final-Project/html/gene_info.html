@@ -12,3 +12,12 @@
     <p>Chromosome name: {{context.chromosome_name}}</p>
   </body>
 </html>
+
+
+      {% for item in context.data: %}
+        {% if 'logic_name' in item %}
+          <li>{{item['external_name']}} {{item['start']}} {{item['end']}}</li>
+        {% else %}
+          <li>{{item['id']}} {{item['start']}} {{item['end']}} </li>
+        {% endif %}
+      {% endfor %}

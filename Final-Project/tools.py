@@ -33,6 +33,7 @@ def cont(file, context):
 
 def get_response(endpoint, arg):
     url = endpoint + arg
+    print("URL", url)
     conn = http.client.HTTPConnection(SERVER)
     conn.request("GET", url)
     response = conn.getresponse()
@@ -41,7 +42,6 @@ def get_response(endpoint, arg):
     data = {}
     if response.status == OK:
         data = json.loads(response.read().decode("utf8"))
-        print("Data:", data)
     else:
         status, contents = error_html()
     return status, data, contents
@@ -151,12 +151,27 @@ def gene_calc(gene):
         status, contents = error_html()
     return status, contents
 
-def gene_list(region, start, end):
-    endpoint = f"/phenotype/region/homo_sapiens/{region}"
+
+def gene_list(chromosome, start, end):
+    endpoint = f"/phenotype/region/homo_sapiens/{chromosome}:{start}-{end}"
     arg = '?content-type=application/json'
     status, data, contents = get_response(endpoint, arg)
     try:
-        context = {"data": data}
+        my_associated_genes = []
+        list_data = data[0]
+        for e in list_data:
+            print("E IN LIST_DATA:", e)
+            if e == "phenotype_association":
+                phenotype_association = e
+                for n in phenotype_association:
+                    print("N IN PHENOTYPE_ASSOCIATION:", n)
+                    if n == "attributes":
+                        attributes = n
+                        for atrib in attributes.keys():
+                            print("ATRIB IN ATTRIB KEYS:", atrib)
+                            if atrib == "associated_gene":
+                                my_associated_genes.append(atrib)
+        context = {"my_associated_genes": my_associated_genes}
         contents = cont("gene_list.html", context)
     except KeyError:
         status, contents = error_html()
