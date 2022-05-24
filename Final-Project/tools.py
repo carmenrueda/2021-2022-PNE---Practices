@@ -167,6 +167,7 @@ def gene_list(chromosome, start, end):
                             if a == "associated_gene": #si la key se llama associated gene
                                 a = attributes["associated_gene"] #a es el value que buscamos
                                 associated_genes.append(a) #lo metemos en una lista
+        empty_list_error = associated_genes[0] #forzamos a q si la lista esta vacia por lo q sea nos de error
         context = {"associated_genes": associated_genes}
         contents = cont("gene_list.html", context)
     except KeyError:
