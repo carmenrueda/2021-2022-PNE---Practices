@@ -40,7 +40,10 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 elif len(arg) == 1:
                     try:
                         lim = int(arg['limit'][0])
-                        status, contents = tools.list_species(lim)
+                        if 0 <= lim <= 311:
+                            status, contents = tools.list_species(lim)
+                        else:
+                            bad_request = True
                     except (KeyError, IndexError, ValueError):
                         bad_request = True
                 else:
