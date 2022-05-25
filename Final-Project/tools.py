@@ -8,16 +8,17 @@ SERVER = "rest.ensembl.org"
 HTML = "./html/"
 OK = 200
 ERROR = 400
-genes_dict = {"SRCAP": "ENSG00000080603", "FRAT1": "ENSG00000165879", "ADA": "ENSG00000196839",
-              "FXN": "ENSG00000165060", "RNU6_269P": "ENSG00000212379", "MIR633": "ENSG00000207552",
-              "TTTY4C": "ENSG00000228296", "RBMY2YP": "ENSG00000227633", "FGFR3": "ENSG00000068078",
-              "KDR": "ENSG00000128052", "ANK2": "ENSG00000145362"}
-
-
-def read_html_file(filename):
-    contents = Path(HTML + filename).read_text()
-    contents = j.Template(contents)
-    return contents
+HUMAN_GENES = {"SRCAP": "ENSG00000080603",
+              "FRAT1": "ENSG00000165879",
+              "ADA": "ENSG00000196839",
+              "FXN": "ENSG00000165060",
+              "RNU6_269P": "ENSG00000212379",
+              "MIR633": "ENSG00000207552",
+              "TTTY4C": "ENSG00000228296",
+              "RBMY2YP": "ENSG00000227633",
+              "FGFR3": "ENSG00000068078",
+              "KDR": "ENSG00000128052",
+              "ANK2": "ENSG00000145362"}
 
 
 def error_html():
@@ -26,23 +27,25 @@ def error_html():
     return status, contents
 
 
-def cont(file, context):
-    contents = read_html_file(file).render(context=context)
+def get_contents(file, context):
+    file_contents = Path(HTML + file).read_text()
+    contents = j.Template(file_contents).render(context=context) #haces una plantilla html y con render le metes tus variables
     return contents
 
 
 def get_response(endpoint, arg):
     url = endpoint + arg
-    conn = http.client.HTTPConnection(SERVER)
-    conn.request("GET", url)
-    response = conn.getresponse()
-    status = OK
+    connection = http.client.HTTPConnection(SERVER)
+    connection.request("GET", url)
+    response = connection.getresponse()
+    status = OK #estas tres lineas son para inicializar las variables
     contents = ""
     data = {}
-    if response.status == OK:
-        data = json.loads(response.read().decode("utf8"))
+    if response.status == OK: #si to bien cogemos data y luego trabajamos con ella pa sacar cositas dependiendo d la funcion
+        data = json.loads(response.read().decode("utf8")) #convert from json to python and get a dict
+        print(data)
     else:
-        status, contents = error_html()
+        status, contents = error_html() #si el status es 400: ERROR
     return status, data, contents
 
 
@@ -52,9 +55,8 @@ def list_species(limit=None):
     status, data, contents = get_response(endpoint, arg)
     try:
         species = data['species']
-        file = "species.html"
         context = {"total": len(species), "species": species, "limit": limit}
-        contents = cont(file, context)
+        contents = get_contents("species.html", context)
     except (KeyError, IndexError):
         status, data = error_html()
     return status, contents
@@ -67,7 +69,7 @@ def karyotype(specie):
     try:
         karyotype = data['karyotype']
         context = {"karyotype": karyotype}
-        contents = cont("karyotype.html", context)
+        contents = get_contents("karyotype.html", context)
     except KeyError:
       status, contents = error_html()
     return status, contents
@@ -96,27 +98,27 @@ def chromosome_length(species, chromosome):
             except (KeyError, ValueError, IndexError):
                 status, contents = error_html()
         context = {"specie": species, "chromosome": chromosome, "length": length}
-        contents = cont("chromo_length.html", context)
+        contents = get_contents("chromo_length.html", context)
     except KeyError:
         status, contents = error_html()
     return status, contents
 
 
 def gene_seq(gene):
-    endpoint = f"/sequence/id/{genes_dict[gene]}"
+    endpoint = f"/sequence/id/{HUMAN_GENES[gene]}"
     arg = '?content-type=application/json'
     status, data, contents = get_response(endpoint, arg)
     try:
         bases = data['seq']
         context = {"gene": gene, "bases": bases}
-        contents = cont("gene_seq.html", context)
+        contents = get_contents("gene_seq.html", context)
     except KeyError:
         status, contents = error_html()
     return status, contents
 
 
 def gene_info(gene):
-    endpoint = f"/sequence/id/{genes_dict[gene]}"
+    endpoint = f"/sequence/id/{HUMAN_GENES[gene]}"
     arg = '?content-type=application/json'
     status, data, contents = get_response(endpoint, arg)
     try:
@@ -127,14 +129,14 @@ def gene_info(gene):
         start = int(desc[3])
         end = int(desc[4])
         context = {"gene": gene, "start": start, "end": end, "id": id, "length": len(seq), "chromosome_name": chrom_name}
-        contents = cont("gene_info.html", context)
+        contents = get_contents("gene_info.html", context)
     except KeyError:
         status, contents = error_html()
     return status, contents
 
 
 def gene_calc(gene):
-    endpoint = f"/sequence/id/{genes_dict[gene]}"
+    endpoint = f"/sequence/id/{HUMAN_GENES[gene]}"
     arg = '?content-type=application/json'
     status, data, contents = get_response(endpoint, arg)
     try:
@@ -145,7 +147,7 @@ def gene_calc(gene):
         T = round((seq.count("T") * 100) / len(seq), 2)
         G = round((seq.count("G") * 100) / len(seq), 2)
         context = {"gene": gene, "length": length, "A": A, "C": C, "G": G, "T": T}
-        contents = cont("gene_calc.html", context)
+        contents = get_contents("gene_calc.html", context)
     except KeyError:
         status, contents = error_html()
     return status, contents
@@ -169,7 +171,7 @@ def gene_list(chromosome, start, end):
                                 associated_genes.append(a) #lo metemos en una lista
         empty_list_error = associated_genes[0] #forzamos a q si la lista esta vacia por lo q sea nos de error
         context = {"associated_genes": associated_genes}
-        contents = cont("gene_list.html", context)
+        contents = get_contents("gene_list.html", context)
     except KeyError:
         status, contents = error_html()
     return status, contents
