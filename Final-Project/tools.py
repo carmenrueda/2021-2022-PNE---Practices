@@ -139,17 +139,14 @@ def gene_calc(gene):
     endpoint = f"/sequence/id/{HUMAN_GENES[gene]}"
     arg = '?content-type=application/json'
     status, data, contents = get_response(endpoint, arg)
-    try:
-        seq = data['seq']
-        length = len(seq)
-        A = round((seq.count("A") * 100) / len(seq), 2)
-        C = round((seq.count("C") * 100) / len(seq), 2)
-        T = round((seq.count("T") * 100) / len(seq), 2)
-        G = round((seq.count("G") * 100) / len(seq), 2)
-        context = {"gene": gene, "length": length, "A": A, "C": C, "G": G, "T": T}
-        contents = get_contents("gene_calc.html", context)
-    except KeyError:
-        status, contents = error_html()
+    seq = data['seq']
+    length = len(seq)
+    bases_percent = {"A": 0, "T": 0, "C": 0, "G": 0}
+    for base in bases_percent.keys():
+        bases_percent[base] = round(seq.count(base) * 100 / len(seq), 2)
+    print(bases_percent)
+    context = {"gene": gene, "length": length, "bases_percent": bases_percent}
+    contents = get_contents("gene_calc.html", context)
     return status, contents
 
 

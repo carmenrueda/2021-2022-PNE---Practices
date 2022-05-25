@@ -61,7 +61,7 @@ def list_species(limit=None):
             my_species.append(specie)
             i += 1
         context = {"total": len(species), "species": my_species, "limit": limit}
-        contents = get_contents("species.html", context)
+        contents = get_contents("myspecies.html", context)
     except (KeyError, IndexError):
         status, data = error_html()
     return status, contents
@@ -142,7 +142,6 @@ def gene_list(chromosome, start, end):
     endpoint = f"/phenotype/region/homo_sapiens/{chromosome}:{start}-{end}"
     arg = '?content-type=application/json'
     status, data, contents = get_response(endpoint, arg)
-    #try:
     associated_genes = []
     for d in data:
         if "phenotype_associations" in d:
@@ -157,6 +156,4 @@ def gene_list(chromosome, start, end):
     empty_list_error = associated_genes[0]
     context = {"associated_genes": associated_genes}
     contents = get_contents("gene_list.html", context)
-    #except KeyError:
-       # status, contents = error_html()
     return status, contents

@@ -30,21 +30,21 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         status = ERROR
         contents = ""
 
-        if endpoint in VALID_ENDPOINTS: #si el endpoint no está en mi lista: automáticamente error
+        if endpoint in VALID_ENDPOINTS:
             if endpoint == "/":
-                status = OK #200 to bien
-                contents = Path("./html/index.html").read_text() #muestro html del index
+                status = OK
+                contents = Path("./html/index.html").read_text()
 
             elif endpoint == "/listSpecies":
-                if len(arg) == 0: #si no me mandan limite
+                if len(arg) == 0:
                     status, contents = tools.list_species()
-                elif len(arg) == 1: #si me mandan limite y esta en ese intervalo
+                elif len(arg) == 1:
                     try:
-                        lim = int(arg['limit'][0]) #mi lim es el numero asociado a limit de mi arg
+                        lim = int(arg['limit'][0])
                         if 0 <= lim <= 311:
-                            status, contents = tools.list_species(lim) #si tengo mi lim bien y to correcto jugamos con las tools
+                            status, contents = tools.list_species(lim)
                         else:
-                            bad_request = True #si me pide un numero negativo o mayor que el max: ERROR
+                            bad_request = True
                     except ValueError:
                         bad_request = True
                 else:

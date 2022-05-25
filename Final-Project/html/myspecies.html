@@ -9,7 +9,7 @@
     <p>The limit you have selected is: {{context.limit}}</p>
     <p>The names of the species are:</p>
     <ul>
-    {% for specie in context.my_species: %}
+    {% for specie in {{context.species}}: %}
       <li>{{specie}}</li>
     {% endfor %}
     </ul>
