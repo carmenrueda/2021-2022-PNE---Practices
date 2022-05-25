@@ -3,7 +3,7 @@ import socketserver
 from urllib.parse import urlparse, parse_qs
 from pathlib import Path
 import termcolor
-import tools
+import tools_experimentos
 
 PORT = 8080
 VALID_ENDPOINTS = ["/", "/listSpecies", "/karyotype", "/chromosomeLength", "/geneSeq", "/geneInfo", "/geneCalc", "/geneList"]
@@ -30,21 +30,21 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         status = ERROR
         contents = ""
 
-        if endpoint in VALID_ENDPOINTS: #si el endpoint no está en mi lista: automáticamente error
+        if endpoint in VALID_ENDPOINTS:
             if endpoint == "/":
-                status = OK #200 to bien
-                contents = Path("./html/index.html").read_text() #muestro html del index
+                status = OK
+                contents = Path("./html/index.html").read_text()
 
             elif endpoint == "/listSpecies":
-                if len(arg) == 0: #si no me mandan limite
-                    status, contents = tools.list_species()
-                elif len(arg) == 1: #si me mandan limite y esta en ese intervalo
+                if len(arg) == 0:
+                    status, contents = tools_experimentos.list_species()
+                elif len(arg) == 1:
                     try:
-                        lim = int(arg['limit'][0]) #mi lim es el numero asociado a limit de mi arg
+                        lim = int(arg['limit'][0])
                         if 0 <= lim <= 311:
-                            status, contents = tools.list_species(lim) #si tengo mi lim bien y to correcto jugamos con las tools
+                            status, contents = tools_experimentos.list_species(lim)
                         else:
-                            bad_request = True #si me pide un numero negativo o mayor que el max: ERROR
+                            bad_request = True
                     except ValueError:
                         bad_request = True
                 else:
@@ -53,7 +53,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             elif endpoint == "/karyotype":
                 if len(arg) == 1:
                     specie = arg['specie'][0]
-                    status, contents = tools.karyotype(specie)
+                    status, contents = tools_experimentos.karyotype(specie)
                 else:
                     bad_request = True
 
@@ -61,7 +61,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 if len(arg) == 2:
                     species = arg['specie'][0]
                     chromo = arg['chromosome'][0]
-                    status, contents = tools.chromosome_length(species, chromo)
+                    status, contents = tools_experimentos.chromosome_length(species, chromo)
                 else:
                     bad_request = True
 
@@ -69,7 +69,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 if len(arg) == 1:
                     try:
                         gene = arg['gene'][0]
-                        status, contents = tools.gene_seq(gene)
+                        status, contents = tools_experimentos.gene_seq(gene)
                     except KeyError:
                         bad_request = True
                 else:
@@ -79,7 +79,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 if len(arg) == 1:
                     try:
                         gene = arg['gene'][0]
-                        status, contents = tools.gene_info(gene)
+                        status, contents = tools_experimentos.gene_info(gene)
                     except (KeyError, IndexError):
                         bad_request = True
                 else:
@@ -89,7 +89,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 if len(arg) == 1:
                     try:
                         gene = arg['gene'][0]
-                        status, contents = tools.gene_calc(gene)
+                        status, contents = tools_experimentos.gene_calc(gene)
                     except (KeyError, IndexError):
                         bad_request = True
                 else:
@@ -101,7 +101,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                         chromosome = arg['chromo'][0]
                         start = int(arg['start'][0])
                         end = int(arg['end'][0])
-                        status, contents = tools.gene_list(chromosome, start, end)
+                        status, contents = tools_experimentos.gene_list(chromosome, start, end)
                     except (KeyError, ValueError, IndexError):
                         bad_request = True
                 else:

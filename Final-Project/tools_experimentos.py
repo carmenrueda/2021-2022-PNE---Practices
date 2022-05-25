@@ -29,7 +29,7 @@ def error_html():
 
 def get_contents(file, context):
     file_contents = Path(HTML + file).read_text()
-    contents = j.Template(file_contents).render(context=context) #haces una plantilla html y con render le metes tus variables
+    contents = j.Template(file_contents).render(context=context)
     return contents
 
 
@@ -44,7 +44,7 @@ def get_response(endpoint, arg):
     if response.status == OK:
         data = json.loads(response.read().decode("utf8"))
     else:
-        status, contents = error_html() #si el status es 400: ERROR
+        status, contents = error_html()
     return status, data, contents
 
 
@@ -76,7 +76,7 @@ def karyotype(species):
         context = {"karyotype": karyotype}
         contents = get_contents("karyotype.html", context)
     except KeyError:
-      status, contents = error_html()
+        status, contents = error_html()
     return status, contents
 
 
@@ -91,8 +91,11 @@ def chromosome_length(species, chromosome):
             if i['name'] == chromosome:
                 length = i['length']
                 break
-        context = {"specie": species, "chromosome": chromosome, "length": length}
-        contents = get_contents("chromo_length.html", context)
+        if length != 0:
+            context = {"specie": species, "chromosome": chromosome, "length": length}
+            contents = get_contents("chromo_length.html", context)
+        else:
+            status, contents = error_html()
     except KeyError:
         status, contents = error_html()
     return status, contents
@@ -115,10 +118,7 @@ def gene_info(gene):
     id = data['id']
     seq = data['seq']
     desc = data['desc'].split(':')
-    chrom_name = desc[1]
-    start = int(desc[3])
-    end = int(desc[4])
-    context = {"gene": gene, "start": start, "end": end, "id": id, "length": len(seq), "chromosome_name": chrom_name}
+    context = {"gene": gene, "id": id, "chromosome_name": desc[1], "start": int(desc[3]), "end": int(desc[4]), "length": len(seq)}
     contents = get_contents("gene_info.html", context)
     return status, contents
 
@@ -129,11 +129,11 @@ def gene_calc(gene):
     status, data, contents = get_response(endpoint, arg)
     seq = data['seq']
     length = len(seq)
-    A = round((seq.count("A") * 100) / len(seq), 2)
-    C = round((seq.count("C") * 100) / len(seq), 2)
-    T = round((seq.count("T") * 100) / len(seq), 2)
-    G = round((seq.count("G") * 100) / len(seq), 2)
-    context = {"gene": gene, "length": length, "A": A, "C": C, "G": G, "T": T}
+    bases_percent = {"A": 0, "T": 0, "C": 0, "G": 0}
+    for base in bases_percent.keys():
+        bases_percent[base] = round(seq.count(base) * 100 / len(seq), 2)
+    print(bases_percent)
+    context = {"gene": gene, "length": length, "bases_percent": bases_percent}
     contents = get_contents("gene_calc.html", context)
     return status, contents
 
