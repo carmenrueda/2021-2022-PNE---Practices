@@ -22,10 +22,8 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         url = urlparse(self.path)
         endpoint = url.path
         arg = parse_qs(url.query)
-        print(f"Parsed URL: {url}")
         print(f"Endpoint: {endpoint}")
         print(f"Argument: {arg}")
-
         bad_request = False
         status = ERROR
         contents = ""

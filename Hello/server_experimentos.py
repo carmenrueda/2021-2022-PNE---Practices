@@ -3,7 +3,7 @@ import socketserver
 from urllib.parse import urlparse, parse_qs
 from pathlib import Path
 import termcolor
-import tools_experimentos
+from Hello import tools_experimentos
 
 PORT = 8080
 VALID_ENDPOINTS = ["/", "/listSpecies", "/karyotype", "/chromosomeLength", "/geneSeq", "/geneInfo", "/geneCalc", "/geneList"]
@@ -22,7 +22,6 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         url = urlparse(self.path)
         endpoint = url.path
         arg = parse_qs(url.query)
-        print(f"Parsed URL: {url}")
         print(f"Endpoint: {endpoint}")
         print(f"Argument: {arg}")
 
@@ -33,18 +32,19 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         if endpoint in VALID_ENDPOINTS:
             if endpoint == "/":
                 status = OK
-                contents = Path("./html/index.html").read_text()
+                contents = Path("../Hello/html/index.html").read_text()
 
             elif endpoint == "/listSpecies":
-                if len(arg) == 0:
-                    status, contents = tools_experimentos.list_species()
-                elif len(arg) == 1:
-                    try:
-                        lim = int(arg['limit'][0])
-                        if 0 <= lim <= 311:
-                            status, contents = tools_experimentos.list_species(lim)
-                        else:
-                            bad_request = True
+                if 'chk' in arg.keys():
+                    if len(arg) == 0:
+                        status, contents = tools_experimentos.list_species()
+                    elif len(arg) == 1:
+                        try:
+                            lim = int(arg['limit'][0])
+                            if 0 <= lim <= 311:
+                                status, contents = tools_experimentos.list_species(lim)
+                            else:
+                                bad_request = True
                     except ValueError:
                         bad_request = True
                 else:
@@ -110,7 +110,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             bad_request = True
 
         if bad_request:
-            contents = Path("./html/error.html").read_text()
+            contents = Path("../Final-Project/html/error.html").read_text()
 
         self.send_response(status)
         self.send_header('Content-Type', 'text/html')

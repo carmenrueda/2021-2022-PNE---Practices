@@ -43,9 +43,8 @@ def get_response(endpoint, arg):
     data = {}
     if response.status == OK: #si to bien cogemos data y luego trabajamos con ella pa sacar cositas dependiendo d la funcion
         data = json.loads(response.read().decode("utf8")) #convert from json to python and get a dict
-        print(data)
     else:
-        status, contents = error_html() #si el status es 400: ERROR
+        status, contents = error_html()
     return status, data, contents
 
 
@@ -55,8 +54,18 @@ def list_species(limit=None):
     status, data, contents = get_response(endpoint, arg)
     try:
         species = data['species']
-        context = {"total": len(species), "species": species, "limit": limit}
-        contents = get_contents("species.html", context)
+        my_species = []
+        if limit == 0:
+            my_species == []
+        else:
+            for dicts in species:
+                if 'display_name' in dicts:
+                    specie = dicts['display_name']
+                    my_species.append(specie)
+                if len(my_species) == limit:
+                    break
+        context = {"total": len(species), "species": my_species, "limit": limit}
+        contents = get_contents("myspecies.html", context)
     except (KeyError, IndexError):
         status, data = error_html()
     return status, contents
@@ -76,13 +85,6 @@ def karyotype(specie):
 
 
 def chromosome_length(species, chromosome):
-
-    '''En arg hay dos diccionarios: uno con la key specie y value human,
-    y otro con keys como assembly_name, karyotype, top_level_region...
-    Accedemos a la key top_level_region.
-    El valor de la key es una lista de diccionarios de los distintos cromosomas.
-    Cada diccionario contiene keys como name, length...
-    Accedemos a nuestro cromosoma por su nombre y llamamos a la key length de ese cromosoma.'''
 
     endpoint = '/info/assembly/'
     arg = f'{species}?content-type=application/json'
@@ -139,14 +141,16 @@ def gene_calc(gene):
     endpoint = f"/sequence/id/{HUMAN_GENES[gene]}"
     arg = '?content-type=application/json'
     status, data, contents = get_response(endpoint, arg)
-    seq = data['seq']
-    length = len(seq)
-    bases_percent = {"A": 0, "T": 0, "C": 0, "G": 0}
-    for base in bases_percent.keys():
-        bases_percent[base] = round(seq.count(base) * 100 / len(seq), 2)
-    print(bases_percent)
-    context = {"gene": gene, "length": length, "bases_percent": bases_percent}
-    contents = get_contents("gene_calc.html", context)
+    try:
+        seq = data['seq']
+        length = len(seq)
+        bases_percent = {"A": 0, "T": 0, "C": 0, "G": 0}
+        for base in bases_percent.keys():
+            bases_percent[base] = round(seq.count(base) * 100 / len(seq), 2)
+        context = {"gene": gene, "length": length, "bases_percent": bases_percent}
+        contents = get_contents("gene_calc.html", context)
+    except KeyError:
+        status, contents = error_html()
     return status, contents
 
 
@@ -156,18 +160,18 @@ def gene_list(chromosome, start, end):
     status, data, contents = get_response(endpoint, arg)
     try:
         associated_genes = []
-        for d in data: #data is a list of dictionaries
-            if "phenotype_associations" in d: #if that key is in the dictionary que se está recorriendo
-                pheno = d["phenotype_associations"] #pheno is the value associated to the key, que a su vez es una lista de diccionarios
-                for p in pheno: #recorremos la lista pheno de diccionarios
-                    if "attributes" in p: #if that key is in the dictionary que se está recorriendo
-                        attributes = p["attributes"] #attributes is the value associated to the key
-                        for a in attributes.keys(): #recorremos las keys de attributes
-                            if a == "associated_gene": #si la key se llama associated gene
-                                a = attributes["associated_gene"] #a es el value que buscamos
-                                associated_genes.append(a) #lo metemos en una lista
-        empty_list_error = associated_genes[0] #forzamos a q si la lista esta vacia por lo q sea nos de error
-        context = {"associated_genes": associated_genes}
+        for d in data:
+            if "phenotype_associations" in d:
+                pheno = d["phenotype_associations"]
+                for p in pheno:
+                    if "attributes" in p:
+                        attributes = p["attributes"]
+                        for a in attributes.keys():
+                            if a == "associated_gene":
+                                a = attributes["associated_gene"]
+                                associated_genes.append(a)
+        empty_list_error = associated_genes[0]
+        context = {"chromo": chromosome, "associated_genes": associated_genes}
         contents = get_contents("gene_list.html", context)
     except KeyError:
         status, contents = error_html()

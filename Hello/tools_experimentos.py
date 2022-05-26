@@ -53,15 +53,28 @@ def list_species(limit=None):
     arg = '?content-type=application/json'
     status, data, contents = get_response(endpoint, arg)
     try:
-        species = data['species']
         my_species = []
-        i = 0
-        while i <= limit:
-            specie = species[0]['display_name']
-            my_species.append(specie)
-            i += 1
-        context = {"total": len(species), "species": my_species, "limit": limit}
-        contents = get_contents("myspecies.html", context)
+        species = data['species']
+        if 'chk' in data.keys() and limit != 0:
+            for dicts in species:
+                if 'display_name' in dicts:
+                    specie = dicts['display_name']
+                    my_species.append(specie.upper())
+                    if len(my_species) == limit:
+                        break
+            context = {"total": len(species), "species": my_species, "limit": limit }
+        else:
+            if limit == 0:
+                my_species == []
+            else:
+                for dicts in species:
+                    if 'display_name' in dicts:
+                        specie = dicts['display_name']
+                        my_species.append(specie)
+                    if len(my_species) == limit:
+                        break
+            context = {"total": len(species), "species": my_species, "limit": limit, }
+        contents = get_contents("species.html", context)
     except (KeyError, IndexError):
         status, data = error_html()
     return status, contents

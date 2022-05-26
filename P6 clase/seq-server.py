@@ -10,7 +10,9 @@ PORT = 8080
 HTML_FOLDER = "./html/"
 LIST_SEQUENCES = ["ACGTCCAGTAAA", "ACGTAGTTTTTAAACCC", "GGGTAAACTACG",
                   "CGTAGTACGTA", "TGCATGCCGAT", "ATATATATATATATATATA"]
-LIST_GENES = ["ADA", "FRAT1", "FXN", "RNU5A", "U5"]
+LIST_GENES = ["ADA", "FRAT1", "FXN", "RNU6_269P", "U5"]
+BASES_ALLOWED = ["A", "C", "G", "T"]
+COMPLEMENT_BASES = {"A": "T", "C": "G", "T": "A", "G": "C"}
 
 
 def read_html_file(filename):
@@ -28,7 +30,6 @@ def count_bases(seq):
     for b in seq:
         d[b] += 1
     """suma 1 a cada value de las html que se encuentra en la iteration y se queda en forma de diccionario"""
-
     total = sum(d.values())
     """el total de html será la suma de todos los values"""
     for k, v in d.items():
@@ -70,6 +71,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         """urlparse splits a URL string into its components (normally a 6 items tuple)"""
         path = url_parsed.path #.path???
         arguments = parse_qs(url_parsed.query) #.query???
+        print("ARGUMENTS:", arguments)
         """Parse a query string given as a string argument. 
         Data are returned as a dictionary -> 
         keys: unique query variable names, values: lists of values for each name."""
@@ -78,30 +80,20 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
         if path == "/":
             """Si está vacío le enseño mi index con formato html"""
-            contents = read_html_file("index.html")\
-                .render(context=
-                        {"n_sequences": len(LIST_SEQUENCES),
-                         "genes": LIST_GENES})
-            """Combines a given template with a given context dictionary 
-            and returns an HttpResponse object with that rendered text.
-            NECESSARY: 
-            {template_name : request object used to generate this response} """
+            contents = read_html_file("index.html").render(context={"n_sequences": len(LIST_SEQUENCES), "genes": LIST_GENES})
+            """Combines a given template with a given context dictionary and returns an HttpResponse object with that rendered text.
+            NECESSARY: {template_name : request object used to generate this response} """
 
         elif path == "/ping":
             """Si me piden ping le enseño mi ping con formato html"""
             contents = read_html_file(path[1:] + ".html").render()
 
         elif path == "/get":
-            """Si me piden get le muestro una lista de números, 
-            asocio cada número a una secuencia
+            """Si me piden get le muestro una lista de números, asocio cada número a una secuencia
             y según el que elija le enseño mi get en formato html con su secuencia asociada al número"""
             n_sequence = int(arguments["n_sequence"][0])
             sequence = LIST_SEQUENCES[n_sequence]
-            contents = read_html_file(path[1:] + ".html")\
-                .render(context = {
-                "n_sequence": n_sequence,
-                "sequence": sequence
-            })
+            contents = read_html_file(path[1:] + ".html").render(context = {"n_sequence": n_sequence, "sequence": sequence})
 
         elif path == "/gene":
             """Si me piden gene le muestro una lista de genes,
@@ -109,47 +101,43 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             y le enseño mi get en formato html con el gen elegido y su secuencia asociada"""
             gene_name = arguments["gene_name"][0]
             sequence = Path("./sequences/" + gene_name + ".txt").read_text()
-            contents = read_html_file(path[1:] + ".html") \
-                .render(context={
-                "gene_name": gene_name,
-                "sequence": sequence
-            })
+            contents = read_html_file(path[1:] + ".html").render(context={"gene_name": gene_name, "sequence": sequence})
 
         elif path == "/operation":
-            """Si me piden operation muestro primero la lista de genes y luego la de posibles operaciones"""
             sequence = arguments["sequence"][0]
-            operation = arguments["operation"][0]
+            op = arguments["operation"][0]
 
-            if operation == "rev":
+            """Si me piden operation muestro primero la lista de genes y luego la de posibles operaciones
+            sequence = arguments["sequence"][0]
+            operation = arguments["operation"][0]"""
+
+            valid = len(sequence) != 0
+            i = 0
+            while valid and i < len(sequence):
+                if sequence[i] not in Seq.BASES_ALLOWED:
+                    valid = False
+                i += 1
+
+            if op == "rev":
                 """Si eligen rev, enseño mi operation en formato html, 
-                meto las elecciones de la operación y la secuencia y enseño el reversed de mi clase Seq."""
-                sequence = Seq()
-                contents = read_html_file(path[1:] + ".html") \
-                    .render(context={
-                    "operation": operation,
-                    "result": sequence.reverse()
-                })
+                meto las elecciones de la operación y la secuencia y enseño el reverse."""
+                seq_rev = sequence[::-1]
+                contents = read_html_file(path[1:] + ".html").render(context={"sequence": sequence, "operation": op, "result": seq_rev})
 
-            elif operation == "info":
+            elif op == "info":
                 """Si eligen info hago lo mismo pero con la función que he hecho antes de info_operation"""
-                contents = read_html_file(path[1:] + ".html") \
-                    .render(context={
-                    "operation": operation,
-                    "result": info_operation(sequence)
-                })
+                contents = read_html_file(path[1:] + ".html").render(context={"sequence": sequence, "operation": op, "result": info_operation(sequence)})
 
-            elif operation == "comp":
-                """Si me piden comp igual con el complement de mi clase Seq."""
-                sequence = Seq()
-                contents = read_html_file(path[1:] + ".html") \
-                    .render(context={
-                    "operation": operation,
-                    "result": sequence.complement()
-                })
+            elif op == "comp":
+                """Si me piden comp igual con el complement"""
+                result = ""
+                for base in sequence:
+                    result += COMPLEMENT_BASES[sequence]
+                contents = read_html_file(path[1:] + ".html").render(context={"sequence": sequence, "operation": op, "result": result})
 
-        else:
-            contents = "I am the happy server! :-)"
-            """Si me piden otra cosa en vez de controlar el error le pongo q soy un happy server"""
+            else:
+                contents = "I am the happy server! :-)"
+                """Si me piden otra cosa en vez de controlar el error le pongo q soy un happy server"""
 
         # Generating the response message
         self.send_response(200)
