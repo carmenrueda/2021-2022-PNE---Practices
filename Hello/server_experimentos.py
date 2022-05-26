@@ -37,6 +37,21 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             elif endpoint == "/listSpecies":
                 if 'chk' in arg.keys():
                     if len(arg) == 0:
+                        status, contents = tools_experimentos.list_species_upper()
+                    elif len(arg) == 1:
+                        try:
+                            lim = int(arg['limit'][0])
+                            if 0 <= lim <= 311:
+                                status, contents = tools_experimentos.list_species_upper(lim)
+                            else:
+                                bad_request = True
+                        except ValueError:
+                            bad_request = True
+                    else:
+                        bad_request = True
+
+                else:
+                    if len(arg) == 0:
                         status, contents = tools_experimentos.list_species()
                     elif len(arg) == 1:
                         try:
@@ -45,10 +60,10 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                                 status, contents = tools_experimentos.list_species(lim)
                             else:
                                 bad_request = True
-                    except ValueError:
+                        except ValueError:
+                            bad_request = True
+                    else:
                         bad_request = True
-                else:
-                    bad_request = True
 
             elif endpoint == "/karyotype":
                 if len(arg) == 1:

@@ -53,28 +53,42 @@ def list_species(limit=None):
     arg = '?content-type=application/json'
     status, data, contents = get_response(endpoint, arg)
     try:
-        my_species = []
         species = data['species']
-        if 'chk' in data.keys() and limit != 0:
+        my_species = []
+        if limit == 0:
+            my_species == []
+        else:
+            for dicts in species:
+                if 'display_name' in dicts:
+                    specie = dicts['display_name']
+                    my_species.append(specie)
+                if len(my_species) == limit:
+                    break
+        context = {"total": len(species), "species": my_species, "limit": limit}
+        contents = get_contents("myspecies.html", context)
+    except (KeyError, IndexError):
+        status, data = error_html()
+    return status, contents
+
+
+def list_species_upper(limit=None):
+    endpoint = '/info/species'
+    arg = '?content-type=application/json'
+    status, data, contents = get_response(endpoint, arg)
+    try:
+        species = data['species']
+        my_species = []
+        if limit == 0:
+            my_species == []
+        else:
             for dicts in species:
                 if 'display_name' in dicts:
                     specie = dicts['display_name']
                     my_species.append(specie.upper())
-                    if len(my_species) == limit:
-                        break
-            context = {"total": len(species), "species": my_species, "limit": limit }
-        else:
-            if limit == 0:
-                my_species == []
-            else:
-                for dicts in species:
-                    if 'display_name' in dicts:
-                        specie = dicts['display_name']
-                        my_species.append(specie)
-                    if len(my_species) == limit:
-                        break
-            context = {"total": len(species), "species": my_species, "limit": limit, }
-        contents = get_contents("species.html", context)
+                if len(my_species) == limit:
+                    break
+        context = {"total": len(species), "species": my_species, "limit": limit}
+        contents = get_contents("myspecies.html", context)
     except (KeyError, IndexError):
         status, data = error_html()
     return status, contents
