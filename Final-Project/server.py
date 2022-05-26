@@ -58,8 +58,11 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             elif endpoint == "/chromosomeLength":
                 if len(arg) == 2:
                     species = arg['specie'][0]
-                    chromo = arg['chromosome'][0]
-                    status, contents = tools.chromosome_length(species, chromo)
+                    chromo = int(arg['chromosome'][0])
+                    if chromo > 0:
+                        status, contents = tools.chromosome_length(species, chromo)
+                    else:
+                        bad_request = True
                 else:
                     bad_request = True
 

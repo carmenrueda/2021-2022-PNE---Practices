@@ -43,6 +43,7 @@ def get_response(endpoint, arg):
     data = {}
     if response.status == OK: #si to bien cogemos data y luego trabajamos con ella pa sacar cositas dependiendo d la funcion
         data = json.loads(response.read().decode("utf8")) #convert from json to python and get a dict
+        print(data)
     else:
         status, contents = error_html()
     return status, data, contents
@@ -84,24 +85,19 @@ def karyotype(specie):
     return status, contents
 
 
-def chromosome_length(species, chromosome):
-
+def chromosome_length(species, chromosome=int):
     endpoint = '/info/assembly/'
     arg = f'{species}?content-type=application/json'
     status, data, contents = get_response(endpoint, arg)
     try:
+        list_chromo = []
         top_level_region = data["top_level_region"]
-        length = 0
-        for dicts_chrom in top_level_region:
-            try:
-                if dicts_chrom['name'] == chromosome:
-                    length = dicts_chrom['length']
-                    break
-            except (KeyError, ValueError, IndexError):
-                status, contents = error_html()
-        context = {"specie": species, "chromosome": chromosome, "length": length}
+        for d in top_level_region:
+            if d['length'] > chromosome:
+                list_chromo.append(d['name'])
+        context = {"specie": species, "chromosome": chromosome, "list_chromo": list_chromo}
         contents = get_contents("chromo_length.html", context)
-    except KeyError:
+    except (KeyError, ValueError, IndexError):
         status, contents = error_html()
     return status, contents
 
